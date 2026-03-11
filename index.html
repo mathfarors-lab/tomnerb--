@@ -404,13 +404,17 @@
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vRtHQITBdbzdbRvUASp2wIn6ficZcq7IiYmyhIHMXNFMmNYZ8qwnIJXdi-a6Nz_dm0E3ArLIw8n1y76/pub?output=csv";
 
       let allProducts = [];
-      let cart = [];
+      // ទាញយកទិន្នន័យ Cart ពី LocalStorage ប្រសិនបើមាន បើមិនមានទេ ឲ្យវាទទេស្អាត[]
+      let cart = JSON.parse(localStorage.getItem("smartStoreCart")) || [];
       let isPOSMode = false;
 
       // លីង Default បើសិនជាអត់បានទាញពី Sheet
       let paymentLink = "https://pay.ababank.com/oRF8/yxsuiw51";
 
       document.addEventListener("DOMContentLoaded", () => {
+        // ធ្វើបច្ចុប្បន្នភាព Cart ភ្លាមៗនៅពេលបើកវេបសាយ យកទិន្នន័យចាស់មកបង្ហាញ
+        updateCartUI();
+
         Papa.parse(SHEET_URL, {
           download: true,
           header: true,
@@ -448,7 +452,6 @@
       }
 
       function processData(data) {
-        // ទាញយក Payment Link ពីកូឡោន "payment link" ពីជួរទី១នៃ Sheet ប្រសិនបើមាន
         if (data.length > 0 && data[0]["payment link"]) {
           paymentLink = data[0]["payment link"];
         }
@@ -461,10 +464,60 @@
               "",
             );
 
+            let rawName = item["name"] || "Unnamed Product";
+            let rawCategory = item["category"] ? item["category"].trim() : "";
+
+            let nameLower = rawName.toLowerCase();
+            const drinkKeywords = [
+              "coffee",
+              "tea",
+              "water",
+              "juice",
+              "milk",
+              "drink",
+              "espresso",
+              "roast",
+              "coca",
+              "pepsi",
+              "កាហ្វេ",
+              "តែ",
+              "ទឹក",
+              "ភេសជ្ជៈ",
+            ];
+            const foodKeywords = [
+              "rice",
+              "burger",
+              "pizza",
+              "noodle",
+              "bread",
+              "cake",
+              "food",
+              "snack",
+              "បាយ",
+              "នំ",
+              "សាច់",
+              "អាហារ",
+            ];
+
+            let finalCategory = rawCategory;
+
+            if (finalCategory === "ភេសជ្ជៈ") finalCategory = "Drink";
+            else if (finalCategory === "អាហារ") finalCategory = "Food";
+
+            if (finalCategory === "") {
+              if (drinkKeywords.some((kw) => nameLower.includes(kw))) {
+                finalCategory = "Drink";
+              } else if (foodKeywords.some((kw) => nameLower.includes(kw))) {
+                finalCategory = "Food";
+              } else {
+                finalCategory = "General";
+              }
+            }
+
             return {
               id: item["id"] || "",
-              name: item["name"] || "Unnamed Product",
-              category: item["category"] || "General",
+              name: rawName,
+              category: finalCategory,
               image:
                 item["image url"] ||
                 "https://via.placeholder.com/300?text=No+Image",
@@ -588,12 +641,19 @@
         }
         badge.innerText = count;
         totalEl.innerText = `$${total.toFixed(2)}`;
+
+        // រក្សាទុក Cart ទៅក្នុង LocalStorage គ្រប់ពេលដែលមានការប្រែប្រួល (Add, លុប ឬ ដូរស្តុក)
+        localStorage.setItem("smartStoreCart", JSON.stringify(cart));
       }
 
       function updateQty(index, change) {
         const item = cart[index];
         const product = allProducts.find((p) => p.id === item.id);
-        if (change === 1 && item.qty >= product.stock) {
+
+        // ឆែកមើលក្រែងលោ product នោះអត់មាន (ក្នុងករណី Refresh មុន sheet ទាញចប់)
+        const stockLimit = product ? product.stock : item.stock;
+
+        if (change === 1 && item.qty >= stockLimit) {
           alert("លើសចំនួនស្តុក!");
           return;
         }
@@ -644,31 +704,24 @@
         }
       }
 
-      // ដំណើរការពេលអ្នកប្រើប្រាស់ចុចលើប៊ូតុងធនាគារ
       function processBankPayment(bankName) {
         if (bankName === "ABA Bank") {
-          // លោតបើកទៅកាន់ Payment Link របស់ ABA ដែលទាញពី Sheet (ឬ Link Default)
           window.open(paymentLink, "_blank");
         } else {
-          // សម្រាប់ធនាគារផ្សេង
           alert(
             `កំពុងដំណើរការទៅកាន់កម្មវិធី ${bankName}...\nសូមធ្វើការស្កេន ឬ វាយបញ្ចូលគណនី។`,
           );
         }
 
-        // បិទ Modal វិញបន្ទាប់ពីចុចបង់ប្រាក់
         const modalEl = document.getElementById("paymentModal");
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
-
-        // សម្អាតទំនិញពីក្នុង Cart បន្ទាប់ពីទូទាត់រួច
         clearCart();
       }
 
-      // Function សម្រាប់សម្អាត Cart
       function clearCart() {
-        cart = [];
-        updateCartUI();
+        cart = []; // សម្អាត Cart ឱ្យទទេ
+        updateCartUI(); // Function នេះនឹងយក[] ទៅ Save ក្នុង LocalStorage វិញ (លុបចោលទាំងស្រុង)
       }
     </script>
   </body>
