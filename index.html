@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TomnerbStore - POS & E-Commerce</title>
+    <title>SmartStore - POS & E-Commerce</title>
 
     <!-- Google Fonts -->
     <link
@@ -20,8 +20,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="style.css">
-    
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <!-- Navbar -->
@@ -35,7 +34,7 @@
             <i class="fa-solid fa-store fs-6"></i>
           </div>
           <h4 class="m-0 fw-bold">
-            Tomnerb<span class="text-primary">Store</span>
+            Smart<span class="text-primary">Store</span>
           </h4>
         </a>
         <button
@@ -87,7 +86,7 @@
           role="status"
           style="width: 3rem; height: 3rem"
         ></div>
-        <h5 class="text-muted fw-light">Reload</h5>
+        <h5 class="text-muted fw-light">កំពុងទាញទិន្នន័យ</h5>
       </div>
       <div
         id="error-message"
@@ -203,6 +202,11 @@
     <script>
       const SHEET_URL =
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vRtHQITBdbzdbRvUASp2wIn6ficZcq7IiYmyhIHMXNFMmNYZ8qwnIJXdi-a6Nz_dm0E3ArLIw8n1y76/pub?output=csv";
+
+      // ព័ត៌មាន Telegram Bot
+      const TELEGRAM_BOT_TOKEN =
+        "8267523556:AAFzqBMutjD4PsFuZYvDxXt7d7VL0W-pKEk";
+      const TELEGRAM_CHAT_ID = "1382677305";
 
       let allProducts = [];
       let cart = [];
@@ -345,7 +349,6 @@
 
       // --- អនុគមន៍ថ្មីសម្រាប់ Save និង Load ទិន្នន័យ (LocalStorage) ---
       function saveCart() {
-        // បម្លែង Array Cart ទៅជា String ហើយ Save ចូលក្នុង Browser
         localStorage.setItem("smartStoreCart", JSON.stringify(cart));
       }
 
@@ -358,15 +361,12 @@
       }
 
       function validateCartAgainstStock() {
-        // លុបទំនិញក្នុង Cart ចោល បើទំនិញនោះត្រូវបានលុបចេញពី Sheet ឬអស់ស្តុក
         cart = cart.filter((cartItem) => {
           const product = allProducts.find((p) => p.id === cartItem.id);
           if (!product || product.stock <= 0) return false;
-          // Update តម្លៃចុងក្រោយក្រែងលោក្នុង Sheet មានការផ្លាស់ប្តូរតម្លៃ
           cartItem.price = product.price;
           cartItem.name = product.name;
           cartItem.image = product.image;
-          // បើក្នុង Cart ច្រើនជាងស្តុកក្នុង Sheet ត្រូវទម្លាក់ចុះមកត្រឹមស្តុកដែលនៅសល់
           if (cartItem.qty > product.stock) cartItem.qty = product.stock;
           return true;
         });
@@ -482,7 +482,6 @@
         const item = cart[index];
         const product = allProducts.find((p) => p.id === item.id);
 
-        // ប្រសិនបើកូដអត់ទាន់មាន Product ពេញលេញទេ អនុញ្ញាតឲ្យបន្ថយសិន
         if (product) {
           if (change === 1 && item.qty >= product.stock) {
             alert("លើសចំនួនស្តុក!");
@@ -521,6 +520,11 @@
         const totalAmountText = document.getElementById("cart-total").innerText;
 
         if (isPOSMode) {
+          // បើនៅ POS Mode ក៏អាចផ្ញើ Telegram បានដែរ (បើមិនចង់ អាចលុបឃ្លាបញ្ជូន Telegram ចេញបាន)
+          sendTelegramNotification(
+            "សាច់ប្រាក់សុទ្ធ (POS Mode)",
+            totalAmountText,
+          );
           alert(
             `ទូទាត់ជោគជ័យ!\nសរុប: ${totalAmountText}\nកំពុងព្រីនវិក្កយបត្រ...`,
           );
@@ -539,7 +543,54 @@
         }
       }
 
+      // --- មុខងារផ្ញើសារទៅ Telegram ---
+      function sendTelegramNotification(bankName, totalAmountText) {
+        if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+
+        // រៀបចំបញ្ជីទំនិញ
+        let itemsList = cart
+          .map(
+            (item) =>
+              `▪️ ${item.name} x${item.qty} ($${(item.price * item.qty).toFixed(2)})`,
+          )
+          .join("\n");
+
+        // ទម្រង់សារដែលនឹងត្រូវបង្ហាញ
+        const message =
+          `🔔 <b>មានការបញ្ជាទិញថ្មី (រង់ចាំការទូទាត់)</b>\n\n` +
+          `🏦 <b>វិធីបង់ប្រាក់:</b> ${bankName}\n` +
+          `💰 <b>ទឹកប្រាក់សរុប:</b> <b>${totalAmountText}</b>\n\n` +
+          `📦 <b>បញ្ជីទំនិញ:</b>\n${itemsList}\n\n` +
+          `⚠️ <i>សូមពិនិត្យមើលក្នុងកម្មវិធីធនាគាររបស់អ្នក ដើម្បីបញ្ជាក់ថាទឹកប្រាក់ពិតជាបានចូលត្រឹមត្រូវ មុននឹងរៀបចំទំនិញ។</i>`;
+
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+        fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: "HTML",
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              console.error(
+                "មិនអាចផ្ញើសារទៅ Telegram បានទេ សូមពិនិត្យមើល Token ឬ Chat ID ម្តងទៀត។",
+              );
+            }
+          })
+          .catch((error) => console.error("Error Telegram API:", error));
+      }
+
       function processBankPayment(bankName) {
+        const totalAmountText = document.getElementById("cart-total").innerText;
+
+        // ១. បាញ់សារចូល Telegram ភ្លាមៗ ពេលចុចបង់ប្រាក់
+        sendTelegramNotification(bankName, totalAmountText);
+
+        // ២. បើកកម្មវិធីបង់ប្រាក់
         if (bankName === "ABA Bank") {
           window.open(paymentLink, "_blank");
         } else {
@@ -548,15 +599,43 @@
           );
         }
 
+        // ៣. បិទ Modal
         const modalEl = document.getElementById("paymentModal");
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
 
+        // ៤. សម្អាតទំនិញចេញពីកន្ត្រក
         clearCart();
       }
 
-      function clearCart() {
+      const APPS_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbxOuP5gbuLsldj9T4Og9AF-qUGveds2wg9f8ph0uEjZaDRCosiV11vrpx5QQB3y8bE/exec";
+
+      async function updateStockInGoogleSheet() {
+        try {
+          await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(cart),
+          });
+        } catch (error) {
+          console.error("Update stock error:", error);
+        }
+      }
+
+      // បន្ទាប់មកហៅវាប្រើក្នុង function clearCart()
+      async function clearCart() {
+        // បើចង់ឱ្យដកស្តុកក្នុង Sheets ផង
+        await updateStockInGoogleSheet();
+
+        // បន្ទាប់មកធ្វើដូចជម្រើសទី ១ ខាងលើ
+        cart.forEach((cartItem) => {
+          const product = allProducts.find((p) => p.id === cartItem.id);
+          if (product) product.stock -= cartItem.qty;
+        });
+
+        renderProducts(allProducts);
         cart = [];
+        saveCart();
         updateCartUI();
       }
     </script>
