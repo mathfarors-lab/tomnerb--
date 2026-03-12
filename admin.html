@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Add Product</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #f4f6f9;
+        font-family: "Poppins", sans-serif;
+      }
+      .admin-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">
+              <i class="fa-solid fa-boxes-stacked text-primary me-2"></i>
+              បន្ថែមទំនិញថ្មី
+            </h2>
+            <a href="index.html" class="btn btn-outline-secondary rounded-pill"
+              ><i class="fa-solid fa-store me-1"></i> មើលហាង</a
+            >
+          </div>
+
+          <div class="admin-card">
+            <form id="addProductForm">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">ឈ្មោះទំនិញ *</label>
+                  <input
+                    type="text"
+                    id="p-name"
+                    class="form-control"
+                    required
+                    placeholder="ឧ. ស្បែកជើងប៉ាតា"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold"
+                    >ប្រភេទទំនិញ (Category) *</label
+                  >
+                  <input
+                    type="text"
+                    id="p-category"
+                    class="form-control"
+                    required
+                    placeholder="ឧ. Shoes"
+                  />
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fw-bold"
+                    >ជ្រើសរើសរូបភាពទំនិញ (Upload Image) *</label
+                  >
+                  <input
+                    type="file"
+                    id="p-image-file"
+                    class="form-control"
+                    accept="image/png, image/jpeg, image/webp"
+                    required
+                  />
+                  <small class="text-muted">ទំហំរូបភាពមិនគួរលើសពី 3MB ទេ</small>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fw-bold"
+                    >ការពិពណ៌នា (Description)</label
+                  >
+                  <textarea
+                    id="p-desc"
+                    class="form-control"
+                    rows="2"
+                    placeholder="ពណ៌នាអំពីទំនិញ..."
+                  ></textarea>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label fw-bold">តម្លៃលក់ ($) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    id="p-price"
+                    class="form-control"
+                    required
+                    placeholder="0.00"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-bold">តម្លៃចាស់ ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    id="p-old-price"
+                    class="form-control"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-bold">ចំនួនស្តុក *</label>
+                  <input
+                    type="number"
+                    id="p-stock"
+                    class="form-control"
+                    required
+                    placeholder="10"
+                  />
+                </div>
+
+                <!-- 🌟 កែប្រែកន្លែងបញ្ចូលទំហំ (Sizes) 🌟 -->
+                <div class="col-12 mt-4">
+                  <label class="form-label fw-bold mb-1"
+                    ><i class="fa-solid fa-ruler-combined me-1"></i> បញ្ចូលទំហំ
+                    (Sizes)</label
+                  >
+                  <p class="text-muted small mb-3">
+                    អ្នកអាចវាយបញ្ចូលអក្សរ (ឧ. S, M, L) ឬលេខ (ឧ. 39, 40, 41)។
+                    ទុកទទេប្រសិនបើគ្មាន។
+                  </p>
+                  <div class="row g-2">
+                    <div class="col-4 col-md-2">
+                      <input
+                        type="text"
+                        id="size-1"
+                        class="form-control text-center fw-bold"
+                        placeholder="ទំហំ ១"
+                      />
+                    </div>
+                    <div class="col-4 col-md-2">
+                      <input
+                        type="text"
+                        id="size-2"
+                        class="form-control text-center fw-bold"
+                        placeholder="ទំហំ ២"
+                      />
+                    </div>
+                    <div class="col-4 col-md-2">
+                      <input
+                        type="text"
+                        id="size-3"
+                        class="form-control text-center fw-bold"
+                        placeholder="ទំហំ ៣"
+                      />
+                    </div>
+                    <div class="col-4 col-md-2">
+                      <input
+                        type="text"
+                        id="size-4"
+                        class="form-control text-center fw-bold"
+                        placeholder="ទំហំ ៤"
+                      />
+                    </div>
+                    <div class="col-4 col-md-2">
+                      <input
+                        type="text"
+                        id="size-5"
+                        class="form-control text-center fw-bold"
+                        placeholder="ទំហំ ៥"
+                      />
+                    </div>
+                    <div class="col-4 col-md-2">
+                      <input
+                        type="text"
+                        id="size-6"
+                        class="form-control text-center fw-bold"
+                        placeholder="ទំហំ ៦"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 mt-4">
+                  <button
+                    type="submit"
+                    class="btn btn-primary w-100 py-3 fw-bold fs-5 rounded-pill shadow-sm"
+                    id="submitBtn"
+                  >
+                    បន្ថែមចូលហាង (Add Product)
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ⚠️ កុំភ្លេចប្តូរ URL នេះទៅជា URL Apps Script របស់អ្នក
+      const APPS_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbwUw9FPJ0mO87TV5lOWdWBaKo_t7pnUAqMaxySB6kWKQU5KvJP9Y_aTJ7TIa60qYzYYRA/exec";
+
+      function getBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => {
+            let encoded = reader.result.toString().replace(/^data:(.*,)?/, "");
+            if (encoded.length % 4 > 0) {
+              encoded += "=".repeat(4 - (encoded.length % 4));
+            }
+            resolve(encoded);
+          };
+          reader.onerror = (error) => reject(error);
+        });
+      }
+
+      document
+        .getElementById("addProductForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const btn = document.getElementById("submitBtn");
+          btn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2"></span> កំពុង Upload រូបភាព និងទិន្នន័យ...';
+          btn.disabled = true;
+
+          const imageFile = document.getElementById("p-image-file").files[0];
+          let base64String = "";
+
+          if (imageFile) {
+            if (imageFile.size > 5 * 1024 * 1024) {
+              alert("ទំហំរូបភាពធំពេក! សូមជ្រើសរើសរូបភាពដែលមានទំហំតូចជាង 5MB។");
+              btn.innerHTML = "បន្ថែមចូលហាង (Add Product)";
+              btn.disabled = false;
+              return;
+            }
+            base64String = await getBase64(imageFile);
+          }
+
+          const newId = Date.now().toString().slice(-6);
+
+          // 🌟 ចាប់យកអក្សរ ឬលេខដែលវាយបញ្ចូលក្នុងប្រអប់ Size
+          const payload = {
+            action: "ADD_PRODUCT",
+            id: newId,
+            name: document.getElementById("p-name").value.trim(),
+            category: document.getElementById("p-category").value.trim(),
+            description: document.getElementById("p-desc").value.trim(),
+            price: document.getElementById("p-price").value,
+            oldPrice: document.getElementById("p-old-price").value || "",
+            stock: document.getElementById("p-stock").value,
+            xs: document.getElementById("size-1").value.trim(),
+            s: document.getElementById("size-2").value.trim(),
+            m: document.getElementById("size-3").value.trim(),
+            l: document.getElementById("size-4").value.trim(),
+            xl: document.getElementById("size-5").value.trim(),
+            xxl: document.getElementById("size-6").value.trim(),
+            imageBase64: base64String,
+            imageType: imageFile.type,
+            imageName: imageFile.name,
+          };
+
+          try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+              method: "POST",
+              body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+
+            if (data.status === "success") {
+              alert("✅ បន្ថែមទំនិញចូលហាងជោគជ័យ!");
+              document.getElementById("addProductForm").reset();
+            } else {
+              alert("❌ មានបញ្ហា៖ " + data.message);
+            }
+          } catch (error) {
+            console.error(error);
+            alert("❌ មានបញ្ហាភ្ជាប់ទៅកាន់ Server!");
+          } finally {
+            btn.innerHTML = "បន្ថែមចូលហាង (Add Product)";
+            btn.disabled = false;
+          }
+        });
+    </script>
+  </body>
+</html>

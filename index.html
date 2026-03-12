@@ -3,23 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tomnerb-Store - POS & E-Commerce</title>
-
-    <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-    <meta name="apple-mobile-web-app-title" content="Tomnerb" />
-    <link rel="apple-touch-icon" href="logo.png" />
-    <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
-
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <title>Admin Dashboard - Store Management</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -28,216 +12,226 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="style.css" />
-
     <style>
       body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
+        background-color: #f4f6f9;
+        font-family: "Poppins", sans-serif;
       }
-      main {
-        flex: 1;
+      .navbar-admin {
+        background-color: #0d6efd;
+        color: white;
       }
-      .footer {
-        background-color: #f8f9fa;
-        text-align: center;
-        padding: 15px 0;
+      .card-dashboard {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+      .nav-pills .nav-link.active {
+        background-color: #0d6efd;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+      }
+      .nav-pills .nav-link {
+        color: #495057;
         font-weight: 500;
-        color: #6c757d;
-        margin-top: auto;
-        border-top: 1px solid #dee2e6;
+        border-radius: 10px;
+        margin-right: 10px;
       }
-
-      /* Floating Chat Button */
-      .floating-chat-btn {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        background-color: #0088cc;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        text-decoration: none;
-        transition: all 0.3s ease;
+      .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
       }
-      .floating-chat-btn:hover {
-        transform: scale(1.1);
-        color: white;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      .img-thumbnail-sm {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
       }
-
-      /* Payment Status Overlay */
-      .payment-overlay {
+      .status-badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      #login-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.95);
-        z-index: 2050;
+        background: #f4f6f9;
+        z-index: 9999;
         display: flex;
         justify-content: center;
         align-items: center;
       }
-      .status-card {
-        background: #fff;
-        padding: 40px 30px;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-        max-width: 450px;
-        width: 90%;
+      .login-card {
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
         text-align: center;
-      }
-
-      /* 🌟 Size Selection Buttons */
-      .size-btn {
-        border: 2px solid #dee2e6;
-        background-color: white;
-        color: #495057;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 60px;
-      }
-      .size-btn:hover {
-        border-color: #0d6efd;
-        color: #0d6efd;
-        background-color: #f8f9fa;
-      }
-      .size-btn.active {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-        color: white;
-        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
       }
     </style>
   </head>
   <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg sticky-top glass-nav shadow-sm py-2">
-      <div class="container-fluid px-4">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-          <div
-            class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center"
-            style="width: 60px; height: 35px"
-          >
-            <img
-              style="width: 100%; border-radius: 20px"
-              src="logo.png"
-              alt=""
-            />
-          </div>
-          <h4 class="m-0 fw-bold">
-            Muslim<span class="text-primary">Store</span>
-          </h4>
-        </a>
-        <button
-          class="navbar-toggler border-0"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
+    <!-- Login Overlay -->
+    <div id="login-overlay">
+      <div class="login-card">
+        <div
+          class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center mb-3"
+          style="width: 70px; height: 70px"
         >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarContent">
-          <div
-            class="mx-auto my-2 my-lg-0 filter-btn-group"
-            id="category-filters"
-          ></div>
-          <div class="d-flex align-items-center gap-4 mt-2 mt-lg-0">
-            <div class="form-check form-switch">
-              <input
-                class="form-check-input fs-5 cursor-pointer"
-                type="checkbox"
-                id="posModeToggle"
-              />
-              <label class="form-check-label fw-semibold" for="posModeToggle"
-                >POS Mode</label
-              >
-            </div>
-            <button
-              class="btn btn-primary rounded-pill px-4 py-2 position-relative shadow-sm fw-semibold"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#cartOffcanvas"
-            >
-              <i class="fa-solid fa-bag-shopping me-2"></i>Cart
-              <span
-                id="cart-badge"
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light"
-                >0</span
-              >
-            </button>
-          </div>
+          <i class="fa-solid fa-lock fs-2"></i>
         </div>
+        <h4 class="fw-bold mb-4">Admin Login</h4>
+        <input
+          type="password"
+          id="admin-pwd"
+          class="form-control form-control-lg mb-3"
+          placeholder="បញ្ចូលលេខសម្ងាត់ (Password)"
+          onkeypress="if (event.key === 'Enter') checkLogin();"
+        />
+        <button
+          class="btn btn-primary btn-lg w-100 fw-bold rounded-pill"
+          onclick="checkLogin()"
+        >
+          ចូល (Login)
+        </button>
+        <p id="login-error" class="text-danger mt-2 mb-0" style="display: none">
+          លេខសម្ងាត់មិនត្រឹមត្រូវទេ!
+        </p>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-admin sticky-top shadow-sm py-3">
+      <div class="container-fluid px-4">
+        <span
+          class="navbar-brand mb-0 h1 fw-bold text-white d-flex align-items-center"
+        >
+          <i class="fa-solid fa-screwdriver-wrench me-2"></i> Admin Dashboard
+        </span>
+        <a href="index.html" class="btn btn-light rounded-pill btn-sm fw-bold">
+          <i class="fa-solid fa-store me-1"></i> មើលហាង
+        </a>
       </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="container-fluid px-4 py-5">
-      <div id="loading-spinner" class="text-center py-5 mt-5">
+    <div class="container-fluid px-4 py-4">
+      <!-- Tabs Navigation -->
+      <ul class="nav nav-pills mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active px-4 py-2"
+            id="products-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#products"
+            type="button"
+            role="tab"
+          >
+            <i class="fa-solid fa-box-open me-2"></i> គ្រប់គ្រងទំនិញ (Products)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link px-4 py-2"
+            id="orders-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#orders"
+            type="button"
+            role="tab"
+          >
+            <i class="fa-solid fa-cart-shopping me-2"></i> ការបញ្ជាទិញ (Orders)
+          </button>
+        </li>
+      </ul>
+
+      <div id="loading-spinner" class="text-center py-5">
         <div
-          class="spinner-border text-primary mb-3"
-          role="status"
+          class="spinner-border text-primary"
           style="width: 3rem; height: 3rem"
+          role="status"
         ></div>
-        <h5 class="text-muted fw-light">កំពុងទាញទិន្នន័យ</h5>
+        <h5 class="mt-3 text-muted">កំពុងទាញទិន្នន័យពី Server...</h5>
       </div>
-      <div
-        id="error-message"
-        class="text-center mt-5"
-        style="display: none"
-      ></div>
-      <div class="row g-4" id="product-grid" style="display: none"></div>
-    </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-      Powered By Farors<br />
-      <a
-        href="#"
-        id="store-location-link"
-        target="_blank"
-        class="mt-2 text-decoration-none fw-bold text-primary"
-        style="display: none"
-      >
-        <i class="fa-solid fa-location-dot"></i> ទីតាំងហាង (Store Location)
-      </a>
-    </footer>
+      <!-- Tab Content -->
+      <div class="tab-content" id="adminTabsContent" style="display: none">
+        <!-- ================= PRODUCT TAB ================= -->
+        <div class="tab-pane fade show active" id="products" role="tabpanel">
+          <div class="card card-dashboard">
+            <div class="card-body p-4">
+              <div
+                class="d-flex justify-content-between align-items-center mb-4"
+              >
+                <h4 class="fw-bold m-0">បញ្ជីទំនិញក្នុងស្តុក</h4>
+                <a
+                  href="add-product.html"
+                  class="btn btn-primary rounded-pill fw-bold shadow-sm"
+                >
+                  <i class="fa-solid fa-plus me-1"></i> បន្ថែមទំនិញថ្មី
+                </a>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>រូបភាព</th>
+                      <th>ឈ្មោះទំនិញ</th>
+                      <th>ប្រភេទ</th>
+                      <th>តម្លៃ</th>
+                      <th>ស្តុក</th>
+                      <th class="text-center">សកម្មភាព (Actions)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-table-body">
+                    <!-- Products will be injected here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <!-- Floating Contact Button -->
-    <a
-      href="#"
-      target="_blank"
-      id="floating-contact-btn"
-      class="floating-chat-btn"
-      style="display: none"
-    >
-      <i class="fa-brands fa-telegram"></i>
-    </a>
+        <!-- ================= ORDERS TAB ================= -->
+        <div class="tab-pane fade" id="orders" role="tabpanel">
+          <div class="card card-dashboard">
+            <div class="card-body p-4">
+              <h4 class="fw-bold mb-4">ប្រវត្តិការកុម្ម៉ង់ទិញ</h4>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>លេខវិក្កយបត្រ (ID)</th>
+                      <th>កាលបរិច្ឆេទ</th>
+                      <th>ស្ថានភាព (Status)</th>
+                      <th class="text-center">គ្រប់គ្រង (Action)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orders-table-body">
+                    <!-- Orders will be injected here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- 🌟 Size Selection Modal (លោតឡើងពេលចុច Add To Cart បើមាន Size) -->
+    <!-- Order Details Modal -->
     <div
       class="modal fade"
-      id="sizeModal"
+      id="orderDetailModal"
       tabindex="-1"
       aria-hidden="true"
-      data-bs-backdrop="static"
     >
-      <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
-          <div class="modal-header bg-light border-bottom-0">
-            <h5 class="modal-title fw-bold text-dark">
-              <i class="fa-solid fa-ruler-combined me-2"></i> ជ្រើសរើសទំហំ
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold">
+              <i class="fa-solid fa-receipt me-2"></i>វិក្កយបត្រលម្អិត
             </h5>
             <button
               type="button"
@@ -245,133 +239,37 @@
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <div class="modal-body p-4 text-center">
-            <h6 class="mb-4 text-muted" id="size-modal-product-name">
-              Product Name
-            </h6>
+          <div class="modal-body p-4">
+            <h6 class="fw-bold text-primary mb-3" id="detail-order-id">#ID</h6>
+            <ul class="list-group mb-3" id="detail-cart-items">
+              <!-- ទំនិញដែលភ្ញៀវទិញនឹងលោតនៅទីនេះ -->
+            </ul>
             <div
-              id="size-options"
-              class="d-flex flex-wrap justify-content-center gap-2 mb-4"
+              class="d-flex justify-content-between align-items-center bg-light p-3 rounded"
             >
-              <!-- ប៊ូតុង Size នឹងលោតចេញទីនេះ -->
+              <span class="fw-bold">សរុប (Total):</span>
+              <span class="fs-4 fw-bold text-danger" id="detail-total-price"
+                >$0.00</span
+              >
             </div>
-            <input type="hidden" id="pending-product-id" />
-            <input type="hidden" id="selected-size" />
-            <button
-              type="button"
-              class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm rounded-3"
-              id="confirm-size-btn"
-              disabled
-              onclick="confirmAddToCart()"
-            >
-              បញ្ជាក់ (Confirm) <i class="fa-solid fa-cart-plus ms-2"></i>
-            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Payment Status Overlay -->
+    <!-- Edit Product Modal -->
     <div
-      id="paymentStatusOverlay"
-      class="payment-overlay"
-      style="display: none"
-    >
-      <div class="status-card">
-        <div id="status-loading">
-          <div
-            class="spinner-border text-primary"
-            style="width: 4rem; height: 4rem"
-            role="status"
-          ></div>
-          <h4 class="mt-4 fw-bold">កំពុងរង់ចាំការបញ្ជាក់...</h4>
-          <p class="text-muted">
-            សូមកុំបិទទំព័រនេះ ហាងកំពុងពិនិត្យវិក្កយបត្ររបស់អ្នកសិន។
-          </p>
-        </div>
-        <div id="status-success" style="display: none">
-          <i
-            class="fa-solid fa-circle-check text-success"
-            style="font-size: 5rem"
-          ></i>
-          <h3 class="mt-4 text-success fw-bold">Your payment is successful!</h3>
-          <p class="text-muted">ការបង់ប្រាក់និងបញ្ជាទិញទទួលបានជោគជ័យ។ អរគុណ!</p>
-          <button
-            class="btn btn-primary px-5 py-2 mt-3 rounded-pill fw-bold"
-            onclick="closeStatusOverlay()"
-          >
-            បិទ (Close)
-          </button>
-        </div>
-        <div id="status-failed" style="display: none">
-          <i
-            class="fa-solid fa-circle-xmark text-danger"
-            style="font-size: 5rem"
-          ></i>
-          <h3 class="mt-4 text-danger fw-bold">ត្រូវបានបដិសេធ!</h3>
-          <p class="text-muted">
-            ការបង់ប្រាក់មានបញ្ហា ឬអ្នកលក់បដិសេធវិក្កយបត្រនេះ។<br />សូមចុចប៊ូតុងខាងក្រោមដើម្បីទាក់ទងមកអ្នកលក់ផ្ទាល់។
-          </p>
-          <a
-            href="#"
-            id="forced-contact-btn"
-            target="_blank"
-            class="btn btn-primary btn-lg mt-3 w-100 rounded-pill fw-bold shadow-sm"
-          >
-            <i class="fa-brands fa-telegram me-2"></i> Contact Us
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Cart Offcanvas -->
-    <div
-      class="offcanvas offcanvas-end border-0 shadow"
+      class="modal fade"
+      id="editProductModal"
       tabindex="-1"
-      id="cartOffcanvas"
-      style="width: 400px"
+      aria-hidden="true"
     >
-      <div class="offcanvas-header bg-light border-bottom">
-        <h5 class="offcanvas-title fw-bold" id="cartTitle">
-          <i class="fa-solid fa-bag-shopping text-primary"></i> Your Cart
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="offcanvas"
-        ></button>
-      </div>
-      <div class="offcanvas-body d-flex flex-column p-0 bg-light">
-        <div id="cart-items" class="flex-grow-1 overflow-auto p-3">
-          <div class="text-center text-muted mt-5">
-            <i class="fa-solid fa-cart-arrow-down fs-1 mb-3 opacity-50"></i>
-            <p>មិនទាន់មានទំនិញទេ</p>
-          </div>
-        </div>
-        <div
-          class="p-4 bg-white border-top shadow-lg"
-          style="border-radius: 20px 20px 0 0"
-        >
-          <div class="d-flex justify-content-between mb-3">
-            <span class="fs-5 text-muted">Total</span
-            ><span class="fs-3 fw-bold text-dark" id="cart-total">$0.00</span>
-          </div>
-          <button
-            class="btn btn-primary w-100 py-3 rounded-3 fw-bold fs-5 shadow-sm"
-            id="checkout-btn"
-          >
-            <i class="fa-regular fa-credit-card"></i> Pay Now
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Customer Details Modal -->
-    <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
-          <div class="modal-header bg-light border-bottom-0">
-            <h5 class="modal-title fw-bold">បំពេញព័ត៌មានអតិថិជន</h5>
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold">
+              <i class="fa-solid fa-pen-to-square me-2"></i>កែប្រែទិន្នន័យទំនិញ
+            </h5>
             <button
               type="button"
               class="btn-close"
@@ -379,675 +277,333 @@
             ></button>
           </div>
           <div class="modal-body p-4">
-            <div class="mb-3">
-              <label class="form-label fw-bold"
-                >ឈ្មោះគណនីធនាគារ <span class="text-danger">*</span></label
-              >
-              <input
-                type="text"
-                id="cust-name"
-                class="form-control"
-                placeholder="ឧ. Sok Dara"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label fw-bold"
-                >លេខទូរស័ព្ទ <span class="text-danger">*</span></label
-              >
-              <input
-                type="tel"
-                id="cust-phone"
-                class="form-control"
-                placeholder="ឧ. 012345678"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label fw-bold">ទីតាំង (Location)</label>
-              <textarea
-                id="cust-location"
-                class="form-control"
-                rows="2"
-                placeholder="បញ្ជាក់ទីតាំងច្បាស់លាស់..."
-              ></textarea>
-            </div>
-            <button
-              type="button"
-              class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm rounded-3"
-              onclick="goToBankSelection()"
-            >
-              បន្តទៅការបង់ប្រាក់ <i class="fa-solid fa-arrow-right ms-2"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bank Selection Modal -->
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-          <div class="modal-header bg-light border-bottom-0">
-            <h5 class="modal-title fw-bold">ជ្រើសរើសធនាគារដើម្បីបង់ប្រាក់</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body text-center p-4">
-            <p class="fs-5 text-muted mb-1">ទឹកប្រាក់ត្រូវបង់សរុប៖</p>
-            <h1 class="text-danger fw-bold mb-4" id="modal-total-amount">
-              $0.00
-            </h1>
-            <div class="d-grid gap-3">
+            <form id="editForm">
+              <input type="hidden" id="edit-id" />
+              <div class="mb-3">
+                <label class="fw-bold form-label">ឈ្មោះទំនិញ</label>
+                <input
+                  type="text"
+                  id="edit-name"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label class="fw-bold form-label">តម្លៃ ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    id="edit-price"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="col-6">
+                  <label class="fw-bold form-label">ចំនួនស្តុក</label>
+                  <input
+                    type="number"
+                    id="edit-stock"
+                    class="form-control"
+                    required
+                  />
+                </div>
+              </div>
               <button
-                class="btn btn-primary py-3 fw-bold fs-5 shadow-sm rounded-3"
-                onclick="processBankPayment('ABA')"
+                type="submit"
+                class="btn btn-success w-100 py-2 fw-bold"
+                id="btn-save-edit"
               >
-                <i class="fa-solid fa-building-columns me-2"></i> បង់តាមរយៈ ABA
-                Bank
+                រក្សាទុកការកែប្រែ (Save)
               </button>
-              <button
-                class="btn btn-dark py-3 fw-bold fs-5 shadow-sm rounded-3"
-                onclick="processBankPayment('ACLEDA')"
-              >
-                <i class="fa-solid fa-building-columns me-2"></i> បង់តាមរយៈ
-                ACLEDA Bank
-              </button>
-              <button
-                class="btn btn-success py-3 fw-bold fs-5 shadow-sm rounded-3"
-                onclick="processBankPayment('Wing')"
-              >
-                <i class="fa-solid fa-building-columns me-2"></i> បង់តាមរយៈ Wing
-                Bank
-              </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-      const SHEET_URL =
-        "https://docs.google.com/spreadsheets/d/e/2PACX-1vRtHQITBdbzdbRvUASp2wIn6ficZcq7IiYmyhIHMXNFMmNYZ8qwnIJXdi-a6Nz_dm0E3ArLIw8n1y76/pub?output=csv";
+      // ⚠️ កុំភ្លេចប្តូរ URL នេះទៅជា URL Apps Script របស់អ្នកដដែល
       const APPS_SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbwUw9FPJ0mO87TV5lOWdWBaKo_t7pnUAqMaxySB6kWKQU5KvJP9Y_aTJ7TIa60qYzYYRA/exec";
-      const STORE_LOGO_URL =
-        "https://img.freepik.com/premium-photo/grateful-quote-alhamdulillah-thank-you-isolated-sunset-sky-landscape-islamic-quote_406607-1882.jpg";
+        "https://script.google.com/macros/s/AKfycbzfKlOx--RZXxtpGBdhEj0MA9Mo8aHY7SqpKFhCmMC2rXZsWSWA-zauMTwNIvIxyzoBpQ/exec";
 
-      let TELEGRAM_BOT_TOKEN = "";
-      let TELEGRAM_CHAT_ID = "";
-      let TELEGRAM_CONTACT_LINK = "";
-      let STORE_LOCATION_LINK = "";
-      let BANK_LINKS = { ABA: "", ACLEDA: "", Wing: "" };
+      let allProducts = [];
+      let allOrders = [];
 
-      let allProducts = [],
-        cart = [],
-        isPOSMode = false;
-      let pollingInterval,
-        pollAttempts = 0;
+      // ប្រកាស Modal ជា Global ដើម្បីការពារកុំឲ្យជាន់ Backdrop គ្នា
+      let editModalInstance;
+      let orderDetailModalInstance;
 
       document.addEventListener("DOMContentLoaded", () => {
-        loadCart();
-        Papa.parse(SHEET_URL, {
-          download: true,
-          header: true,
-          skipEmptyLines: true,
-          transformHeader: function (h) {
-            return h.trim().toLowerCase();
-          },
-          complete: function (results) {
-            try {
-              // 🌟 ចាប់យក Columns ដែលតំណាងឲ្យ Size ដោយស្វ័យប្រវត្តិ (ចន្លោះ Category និង Image URL)
-              let fields = results.meta.fields.map((h) =>
-                h.trim().toLowerCase(),
-              );
-              let catIdx = fields.indexOf("category");
-              let imgIdx = fields.indexOf("image url");
-              let sizeKeys = [];
-
-              if (catIdx !== -1 && imgIdx !== -1 && imgIdx > catIdx + 1) {
-                sizeKeys = fields.slice(catIdx + 1, imgIdx);
-              }
-
-              processData(results.data, sizeKeys);
-            } catch (e) {
-              showError("មានបញ្ហាក្នុងការរៀបចំទិន្នន័យ៖ " + e.message);
-            }
-          },
-          error: function (error) {
-            showError("មិនអាចភ្ជាប់ទៅកាន់ Google Sheets បានទេ។");
-          },
-        });
-
-        document
-          .getElementById("posModeToggle")
-          .addEventListener("change", togglePOSMode);
-        document
-          .getElementById("checkout-btn")
-          .addEventListener("click", checkout);
+        editModalInstance = new bootstrap.Modal(
+          document.getElementById("editProductModal"),
+        );
+        orderDetailModalInstance = new bootstrap.Modal(
+          document.getElementById("orderDetailModal"),
+        );
+        loadAdminData();
       });
 
-      function showError(msg) {
-        document.getElementById("loading-spinner").style.display = "none";
-        document.getElementById("error-message").style.display = "block";
-        document.getElementById("error-message").innerHTML =
-          `<div class="alert alert-danger d-inline-block"><i class="fa-solid fa-triangle-exclamation"></i> ${msg}</div>`;
+      // ១. មុខងារត្រួតពិនិត្យការ Login (Admin Check)
+      function checkLogin() {
+        const pwd = document.getElementById("admin-pwd").value;
+        const errorMsg = document.getElementById("login-error");
+
+        // ⚠️ ប្តូរ '123456' ទៅជាលេខសម្ងាត់ដែលអ្នកចង់បាន
+        if (pwd === "123456") {
+          document.getElementById("login-overlay").style.display = "none";
+          errorMsg.style.display = "none";
+        } else {
+          errorMsg.style.display = "block";
+        }
       }
 
-      function processData(data, sizeKeys) {
-        for (let row of data) {
-          if (row["bot token"] && !TELEGRAM_BOT_TOKEN)
-            TELEGRAM_BOT_TOKEN = row["bot token"].trim();
-          if (row["my id"] && !TELEGRAM_CHAT_ID)
-            TELEGRAM_CHAT_ID = String(row["my id"])
-              .replace(/[^\d-]/g, "")
-              .trim();
-          if (row["telegram"] && !TELEGRAM_CONTACT_LINK)
-            TELEGRAM_CONTACT_LINK = row["telegram"].trim();
-          if (row["location"] && !STORE_LOCATION_LINK)
-            STORE_LOCATION_LINK = row["location"].trim();
-          if (row["aba"] && !BANK_LINKS["ABA"])
-            BANK_LINKS["ABA"] = row["aba"].trim();
-          if (row["acleda"] && !BANK_LINKS["ACLEDA"])
-            BANK_LINKS["ACLEDA"] = row["acleda"].trim();
-          if (row["wing"] && !BANK_LINKS["Wing"])
-            BANK_LINKS["Wing"] = row["wing"].trim();
+      // ២. ទាញយកទិន្នន័យពី Sheet ទាំងពីរ (Products និង Orders)
+      async function loadAdminData() {
+        try {
+          const response = await fetch(
+            `${APPS_SCRIPT_URL}?action=GET_ADMIN_DATA`,
+          );
+          const data = await response.json();
+
+          allProducts = data.products || [];
+          allOrders = data.orders || [];
+
+          renderProducts();
+          renderOrders();
+
+          document.getElementById("loading-spinner").style.display = "none";
+          document.getElementById("adminTabsContent").style.display = "block";
+        } catch (error) {
+          console.error(error);
+          alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Database!");
+        }
+      }
+
+      // ៣. បង្ហាញបញ្ជីទំនិញ
+      function renderProducts() {
+        const tbody = document.getElementById("products-table-body");
+        tbody.innerHTML = "";
+
+        if (allProducts.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">គ្មានទំនិញទេ</td></tr>`;
+          return;
         }
 
-        if (TELEGRAM_CONTACT_LINK) {
-          document.getElementById("floating-contact-btn").href =
-            TELEGRAM_CONTACT_LINK;
-          document.getElementById("floating-contact-btn").style.display =
-            "flex";
-        }
-        if (STORE_LOCATION_LINK) {
-          document.getElementById("store-location-link").href =
-            STORE_LOCATION_LINK;
-          document.getElementById("store-location-link").style.display =
-            "inline-block";
+        allProducts.forEach((p) => {
+          tbody.innerHTML += `
+            <tr>
+              <td><img src="${p.image}" class="img-thumbnail-sm" onerror="this.src='https://via.placeholder.com/50'"></td>
+              <td class="fw-bold">${p.name}</td>
+              <td>${p.category}</td>
+              <td class="text-primary fw-bold">$${p.price}</td>
+              <td>
+                <span class="badge ${p.stock > 0 ? "bg-success" : "bg-danger"}">${p.stock} ក្នុងស្តុក</span>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-primary rounded-pill me-2" onclick="openEditModal('${p.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                <button class="btn btn-sm btn-outline-danger rounded-pill" onclick="deleteProduct('${p.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+
+      // ៤. បង្ហាញការកុម្ម៉ង់ទិញ
+      function renderOrders() {
+        const tbody = document.getElementById("orders-table-body");
+        tbody.innerHTML = "";
+
+        if (allOrders.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">គ្មានការកុម្ម៉ង់ទេ</td></tr>`;
+          return;
         }
 
-        allProducts = data
-          .map((item) => {
-            let rawPrice = String(item["price"] || "0").replace(/[^0-9.]/g, "");
-            let rawOldPrice = String(item["old price"] || "").replace(
-              /[^0-9.]/g,
-              "",
-            );
+        // បង្ហាញ Order ថ្មីៗមុនគេ (Reverse array)
+        [...allOrders].reverse().forEach((o) => {
+          let statusBadge = "";
+          if (o.status === "pending")
+            statusBadge = `<span class="status-badge bg-warning text-dark">កំពុងរង់ចាំ (Pending)</span>`;
+          else if (o.status === "confirmed")
+            statusBadge = `<span class="status-badge bg-success text-white">ជោគជ័យ (Confirmed)</span>`;
+          else
+            statusBadge = `<span class="status-badge bg-danger text-white">បដិសេធ (Rejected)</span>`;
 
-            // 🌟 ទាញយក Size ពីជួរឈរដែលបានកំណត់ (អត់យកកន្លែងទទេ)
-            let availableSizes = [];
-            sizeKeys.forEach((key) => {
-              let sizeValue = item[key];
-              if (sizeValue !== undefined && String(sizeValue).trim() !== "") {
-                availableSizes.push(String(sizeValue).trim());
-              }
+          tbody.innerHTML += `
+            <tr>
+              <td class="fw-bold">#${o.orderId}</td>
+              <td>${new Date(o.date).toLocaleString()}</td>
+              <td>${statusBadge}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-info text-white fw-bold me-1 mb-1" onclick="viewOrderDetails('${o.orderId}')" title="មើលលម្អិត">
+                  <i class="fa-solid fa-eye"></i> លម្អិត
+                </button>
+                ${
+                  o.status === "pending"
+                    ? `
+                  <button class="btn btn-sm btn-success fw-bold me-1 mb-1" onclick="updateOrderStatus('${o.orderId}', 'confirmed')" title="យល់ព្រម"><i class="fa-solid fa-check"></i></button>
+                  <button class="btn btn-sm btn-danger fw-bold mb-1" onclick="updateOrderStatus('${o.orderId}', 'rejected')" title="បដិសេធ"><i class="fa-solid fa-xmark"></i></button>
+                `
+                    : `<span class="text-muted ms-2"><i class="fa-solid fa-lock"></i> បានបញ្ចប់</span>`
+                }
+              </td>
+            </tr>
+          `;
+        });
+      }
+
+      // ៥. មើលវិក្កយបត្រលម្អិត (Order Details)
+      function viewOrderDetails(orderId) {
+        // ប្រកបធៀប ID ជា String ដើម្បីការពារកំហុស
+        const order = allOrders.find(
+          (o) => String(o.orderId) === String(orderId),
+        );
+        if (!order) return;
+
+        document.getElementById("detail-order-id").innerText =
+          `#${order.orderId}`;
+        const cartItemsContainer = document.getElementById("detail-cart-items");
+        cartItemsContainer.innerHTML = "";
+
+        let items = [];
+        try {
+          items =
+            typeof order.items === "string"
+              ? JSON.parse(order.items)
+              : order.items || [];
+        } catch (e) {
+          console.error("Error parsing items:", e);
+        }
+
+        let total = 0;
+        items.forEach((item) => {
+          const subtotal = item.price * item.quantity;
+          total += subtotal;
+          cartItemsContainer.innerHTML += `
+            <li class="list-group-item d-flex justify-content-between align-items-center border-0 border-bottom px-0">
+              <div>
+                <h6 class="my-0 fw-bold">${item.name}</h6>
+                <small class="text-muted">ចំនួន: ${item.quantity} x $${item.price}</small>
+              </div>
+              <span class="fw-bold">$${subtotal.toFixed(2)}</span>
+            </li>
+          `;
+        });
+
+        document.getElementById("detail-total-price").innerText =
+          `$${total.toFixed(2)}`;
+        orderDetailModalInstance.show();
+      }
+
+      // ៦. បើក Modal កែប្រែទំនិញ (Edit)
+      function openEditModal(productId) {
+        const p = allProducts.find(
+          (item) => String(item.id) === String(productId),
+        );
+        if (!p) return;
+
+        document.getElementById("edit-id").value = p.id;
+        document.getElementById("edit-name").value = p.name;
+        document.getElementById("edit-price").value = p.price;
+        document.getElementById("edit-stock").value = p.stock;
+
+        editModalInstance.show();
+      }
+
+      // ៧. រក្សាទុកការកែប្រែទំនិញ
+      document
+        .getElementById("editForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const btnSave = document.getElementById("btn-save-edit");
+          btnSave.disabled = true;
+          btnSave.innerHTML =
+            '<span class="spinner-border spinner-border-sm"></span> កំពុងរក្សាទុក...';
+
+          const id = document.getElementById("edit-id").value;
+          const name = document.getElementById("edit-name").value;
+          const price = document.getElementById("edit-price").value;
+          const stock = document.getElementById("edit-stock").value;
+
+          try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+              method: "POST",
+              body: new URLSearchParams({
+                action: "UPDATE_PRODUCT",
+                id: id,
+                name: name,
+                price: price,
+                stock: stock,
+              }),
             });
 
-            return {
-              id: item["id"] || "",
-              name: item["name"] || "Unnamed Product",
-              sizes: availableSizes, // ផ្ទុក Size ទាំងអស់របស់ទំនិញ
-              category: item["category"] ? item["category"].trim() : "General",
-              image:
-                item["image url"] ||
-                "https://via.placeholder.com/300?text=No+Image",
-              desc: item["description"] || "",
-              price: parseFloat(rawPrice) || 0,
-              oldPrice: rawOldPrice ? parseFloat(rawOldPrice) : null,
-              stock: parseInt(item["stock"]) || 0,
-            };
-          })
-          .filter((p) => p.id !== "" && p.price > 0);
-
-        document.getElementById("loading-spinner").style.display = "none";
-        document.getElementById("product-grid").style.display = "flex";
-        generateCategories();
-        renderProducts(allProducts);
-        validateCartAgainstStock();
-      }
-
-      function saveCart() {
-        localStorage.setItem("smartStoreCart", JSON.stringify(cart));
-      }
-      function loadCart() {
-        const sc = localStorage.getItem("smartStoreCart");
-        if (sc) {
-          cart = JSON.parse(sc);
-          updateCartUI();
-        }
-      }
-
-      function validateCartAgainstStock() {
-        cart = cart.filter((cartItem) => {
-          const product = allProducts.find((p) => p.id === cartItem.id);
-          if (!product || product.stock <= 0) return false;
-          cartItem.price = product.price;
-          cartItem.name = product.name;
-          return true;
-        });
-        saveCart();
-        updateCartUI();
-      }
-
-      function generateCategories() {
-        const container = document.getElementById("category-filters");
-        const categories = [
-          "All",
-          ...new Set(allProducts.map((p) => p.category).filter(Boolean)),
-        ];
-        container.innerHTML = "";
-        categories.forEach((cat, index) => {
-          const btn = document.createElement("button");
-          btn.className = `filter-btn ${index === 0 ? "active" : ""}`;
-          btn.textContent = cat;
-          btn.onclick = (e) => filterProducts(cat, e.target);
-          container.appendChild(btn);
-        });
-      }
-
-      function filterProducts(category, clickedBtn) {
-        document
-          .querySelectorAll(".filter-btn")
-          .forEach((btn) => btn.classList.remove("active"));
-        clickedBtn.classList.add("active");
-        if (category === "All") renderProducts(allProducts);
-        else renderProducts(allProducts.filter((p) => p.category === category));
-      }
-
-      function renderProducts(productsToRender) {
-        const grid = document.getElementById("product-grid");
-        grid.innerHTML = "";
-        productsToRender.forEach((p) => {
-          const inStock = p.stock > 0;
-
-          // 🌟 បង្ហាញ Size នៅលើកាតទំនិញ (ដើម្បីអោយអតិថិជនដឹងមុន)
-          const sizesDisplay =
-            p.sizes.length > 0
-              ? `<div class="mt-1 mb-2 text-muted" style="font-size: 0.85rem;"><i class="fa-solid fa-ruler-combined me-1"></i> Sizes: ${p.sizes.join(", ")}</div>`
-              : "";
-
-          grid.innerHTML += `
-                <div class="col-12 col-sm-6 col-md-4 col-xl-3">
-                    <div class="product-card">
-                        <div class="img-container">
-                            <span class="badge-stock ${inStock ? "" : "text-danger"}"><i class="fa-solid fa-box me-1"></i> ${inStock ? p.stock + " In Stock" : "Out of Stock"}</span>
-                            <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
-                        </div>
-                        <h4 class="product-title m-0 mt-2">${p.name}</h4>
-                        ${sizesDisplay}
-                        <p class="product-desc mt-1">${p.desc}</p>
-                        <div class="price-box">
-                            <span class="current-price">$${p.price.toFixed(2)}</span>
-                            ${p.oldPrice > p.price ? `<span class="old-price">$${p.oldPrice.toFixed(2)}</span>` : ""}
-                        </div>
-                        <button class="btn-add w-100" onclick="addToCart('${p.id}')" ${!inStock ? "disabled" : ""}>
-                            <i class="fa-solid fa-cart-plus me-1"></i> ${inStock ? "Add to Cart" : "Sold Out"}
-                        </button>
-                    </div>
-                </div>`;
-        });
-      }
-
-      // 🌟 Function ចុច Add To Cart
-      function addToCart(id) {
-        const product = allProducts.find((p) => p.id === id);
-
-        // ឆែកមើលបើសិនជាទំនិញនោះមានបញ្ជូល Size ក្នុង Sheet
-        if (product.sizes && product.sizes.length > 0) {
-          // បើមាន លោតផ្ទាំងឲ្យរើស Size សិន
-          openSizeModal(product);
-        } else {
-          // បើអត់មានបញ្ជូល Size ទេ Add ចូលផ្ទាល់តែម្តង
-          executeAddToCart(product, null);
-        }
-      }
-
-      // 🌟 Function លោតផ្ទាំងរើស Size
-      function openSizeModal(product) {
-        document.getElementById("size-modal-product-name").innerText =
-          product.name;
-        document.getElementById("pending-product-id").value = product.id;
-        document.getElementById("selected-size").value = "";
-
-        // Disable ប៊ូតុង Confirm រហូតទាល់តែរើស Size សិន
-        const confirmBtn = document.getElementById("confirm-size-btn");
-        confirmBtn.disabled = true;
-
-        const sizeContainer = document.getElementById("size-options");
-        sizeContainer.innerHTML = ""; // លុប Size ចាស់ៗចោល
-
-        // បង្កើតប៊ូតុង Size ថ្មី
-        product.sizes.forEach((size) => {
-          const btn = document.createElement("button");
-          btn.className = "size-btn";
-          btn.innerText = size;
-          btn.onclick = function () {
-            // ផ្តាច់ Active ពីប៊ូតុងផ្សេង
-            document
-              .querySelectorAll(".size-btn")
-              .forEach((b) => b.classList.remove("active"));
-            // ដាក់ Active លើប៊ូតុងដែលកំពុងចុច
-            this.classList.add("active");
-            // កំណត់តម្លៃ Size ចូល Input លាក់
-            document.getElementById("selected-size").value = size;
-            // បើកអោយចុច Confirm បាន
-            confirmBtn.disabled = false;
-          };
-          sizeContainer.appendChild(btn);
-        });
-
-        // បង្ហាញ Modal
-        new bootstrap.Modal(document.getElementById("sizeModal")).show();
-      }
-
-      // 🌟 Function បញ្ជាក់ការរើស Size រួចបញ្ចូលក្នុងរទេះ
-      function confirmAddToCart() {
-        const id = document.getElementById("pending-product-id").value;
-        const size = document.getElementById("selected-size").value;
-        const product = allProducts.find((p) => p.id === id);
-
-        if (!size) return; // ការពារ Error
-
-        executeAddToCart(product, size);
-
-        // បិទ Modal វិញ
-        bootstrap.Modal.getInstance(
-          document.getElementById("sizeModal"),
-        ).hide();
-      }
-
-      // 🌟 Function បញ្ចូលទំនិញទៅក្នុងរទេះពិតប្រាកដ
-      function executeAddToCart(product, selectedSize) {
-        // គណនាចំនួនសរុបនៃទំនិញនេះនៅក្នុងរទេះ (ទោះបីខុស Size គ្នាក៏គិតចូលស្តុកតែមួយ)
-        let totalQtyInCart = cart
-          .filter((c) => c.id === product.id)
-          .reduce((sum, c) => sum + c.qty, 0);
-        if (totalQtyInCart >= product.stock) {
-          alert("អស់ស្តុកហើយ!");
-          return;
-        }
-
-        // ស្វែងរកទំនិញដែលដូចគ្នាទាំង ID និង Size
-        const existingItemIndex = cart.findIndex(
-          (item) => item.id === product.id && item.size === selectedSize,
-        );
-
-        if (existingItemIndex !== -1) {
-          cart[existingItemIndex].qty++;
-        } else {
-          cart.push({ ...product, size: selectedSize, qty: 1 });
-        }
-
-        updateCartUI();
-        saveCart();
-      }
-
-      function updateCartUI() {
-        const container = document.getElementById("cart-items");
-        container.innerHTML = "";
-        let total = 0,
-          count = 0;
-        if (cart.length === 0) {
-          container.innerHTML = `<div class="text-center text-muted mt-5"><i class="fa-solid fa-cart-arrow-down fs-1 mb-3 opacity-50"></i><p>មិនទាន់មានទំនិញទេ</p></div>`;
-        } else {
-          cart.forEach((item, index) => {
-            total += item.price * item.qty;
-            count += item.qty;
-
-            // 🌟 បង្ហាញ Size នៅក្នុងកន្ត្រក
-            const sizeBadge = item.size
-              ? `<span class="badge bg-light text-dark border ms-1">Size: ${item.size}</span>`
-              : "";
-
-            container.innerHTML += `
-                    <div class="cart-item shadow-sm">
-                        <img src="${item.image}" class="cart-img" onerror="this.src='https://via.placeholder.com/70'">
-                        <div class="flex-grow-1 overflow-hidden">
-                            <h6 class="m-0 fw-bold text-truncate">${item.name} ${sizeBadge}</h6>
-                            <div class="text-primary fw-bold mt-1">$${(item.price * item.qty).toFixed(2)}</div>
-                        </div>
-                        <div class="qty-control">
-                            <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
-                            <span class="px-2 fw-bold text-dark">${item.qty}</span>
-                            <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
-                        </div>
-                    </div>`;
-          });
-        }
-        document.getElementById("cart-badge").innerText = count;
-        document.getElementById("cart-total").innerText =
-          `$${total.toFixed(2)}`;
-      }
-
-      function updateQty(index, change) {
-        const item = cart[index];
-        const product = allProducts.find((p) => p.id === item.id);
-
-        if (change === 1) {
-          let totalQtyInCart = cart
-            .filter((c) => c.id === product.id)
-            .reduce((sum, c) => sum + c.qty, 0);
-          if (totalQtyInCart >= product.stock) {
-            alert("លើសចំនួនស្តុក!");
-            return;
+            const result = await response.json();
+            if (result.status === "success") {
+              alert("ធ្វើបច្ចុប្បន្នភាពបានជោគជ័យ!");
+              editModalInstance.hide();
+              loadAdminData(); // ទាញទិន្នន័យថ្មីមកបង្ហាញ
+            } else {
+              alert("កំហុស: " + result.message);
+            }
+          } catch (error) {
+            alert("មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ Server!");
+          } finally {
+            btnSave.disabled = false;
+            btnSave.innerText = "រក្សាទុកការកែប្រែ (Save)";
           }
-        }
+        });
 
-        item.qty += change;
-        if (item.qty <= 0) cart.splice(index, 1);
-        updateCartUI();
-        saveCart();
-      }
-
-      function togglePOSMode() {
-        isPOSMode = document.getElementById("posModeToggle").checked;
-        document.body.classList.toggle("pos-mode", isPOSMode);
-        document.getElementById("cartTitle").innerHTML = isPOSMode
-          ? '<i class="fa-solid fa-desktop text-success"></i> POS Register'
-          : '<i class="fa-solid fa-bag-shopping text-primary"></i> Your Cart';
-        document.getElementById("checkout-btn").innerHTML = isPOSMode
-          ? '<i class="fa-solid fa-print"></i> Print & Pay'
-          : '<i class="fa-regular fa-credit-card"></i> Pay Now';
-      }
-
-      function checkout() {
-        if (cart.length === 0) {
-          alert("រទេះទទេស្អាត! សូមជ្រើសរើសទំនិញជាមុនសិន។");
-          return;
-        }
-        bootstrap.Offcanvas.getInstance(
-          document.getElementById("cartOffcanvas"),
-        )?.hide();
-        if (isPOSMode) {
-          document.getElementById("modal-total-amount").innerText =
-            document.getElementById("cart-total").innerText;
-          new bootstrap.Modal(document.getElementById("paymentModal")).show();
-        } else {
-          new bootstrap.Modal(document.getElementById("customerModal")).show();
-        }
-      }
-
-      function goToBankSelection() {
-        const name = document.getElementById("cust-name").value.trim();
-        const phone = document.getElementById("cust-phone").value.trim();
-        if (!name || !phone) {
-          alert("សូមបំពេញ ឈ្មោះ និង លេខទូរស័ព្ទឱ្យបានត្រឹមត្រូវ!");
-          return;
-        }
-        bootstrap.Modal.getInstance(
-          document.getElementById("customerModal"),
-        )?.hide();
-        document.getElementById("modal-total-amount").innerText =
-          document.getElementById("cart-total").innerText;
-        new bootstrap.Modal(document.getElementById("paymentModal")).show();
-      }
-
-      async function processBankPayment(bankName) {
-        const totalAmountText = document.getElementById("cart-total").innerText;
-        const orderId = "INV" + Date.now().toString().slice(-6);
-
-        bootstrap.Modal.getInstance(
-          document.getElementById("paymentModal"),
-        )?.hide();
-        showStatusOverlay("loading");
-        if (BANK_LINKS[bankName]) window.open(BANK_LINKS[bankName], "_blank");
-
-        let isTgSuccess = await sendTelegramNotification(
-          bankName,
-          totalAmountText,
-          orderId,
-        );
-
-        if (!isTgSuccess) {
-          showStatusOverlay("failed");
-          return;
-        }
-        startPolling(orderId);
-      }
-
-      async function sendTelegramNotification(
-        bankName,
-        totalAmountText,
-        orderId,
-      ) {
-        if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return false;
-
-        const now = new Date();
-        const dateStr = now.toLocaleDateString("en-GB");
-        const timeStr = now.toLocaleTimeString("en-US");
-
-        const custName =
-          document.getElementById("cust-name").value || "POS Customer";
-        const custPhone = document.getElementById("cust-phone").value || "N/A";
-        const custLocation =
-          document.getElementById("cust-location").value || "N/A";
-
-        // 🌟 ភ្ជាប់ Size ទៅក្នុងវិក្កយបត្រ Telegram
-        let itemsList = cart
-          .map((item, index) => {
-            let sizeText = item.size ? ` [Size: ${item.size}]` : "";
-            return `${index + 1}. ${item.name}${sizeText}\n   └ ${item.qty} x $${item.price.toFixed(2)} = $${(item.price * item.qty).toFixed(2)}`;
-          })
-          .join("\n");
-
-        const caption =
-          `🧾 <b>វិក្កយបត្រថ្មី (New Invoice)</b>\n` +
-          `━━━━━━━━━━━━━━━━━━━━\n` +
-          `🔢 <b>លេខរៀង:</b> #${orderId}\n` +
-          `📅 <b>ថ្ងៃខែ:</b> ${dateStr} | <b>ម៉ោង:</b> ${timeStr}\n` +
-          `🏦 <b>វិធីបង់ប្រាក់:</b> ${bankName}\n` +
-          `━━━━━━━━━━━━━━━━━━━━\n` +
-          `👤 <b>ឈ្មោះ:</b> ${custName}\n` +
-          `📞 <b>លេខទូរស័ព្ទ:</b> ${custPhone}\n` +
-          `📍 <b>ទីតាំង:</b> ${custLocation}\n` +
-          `━━━━━━━━━━━━━━━━━━━━\n` +
-          `<b>បញ្ជីទំនិញ:</b>\n${itemsList}\n` +
-          `━━━━━━━━━━━━━━━━━━━━\n` +
-          `💰 <b>ទឹកប្រាក់សរុប:</b> <b>${totalAmountText}</b>\n\n` +
-          `<i>⚠️ សូមពិនិត្យមើលគណនីធនាគារមុននឹងចុច Confirm</i>`;
-
-        const payload = {
-          chat_id: TELEGRAM_CHAT_ID,
-          photo: STORE_LOGO_URL,
-          caption: caption,
-          parse_mode: "HTML",
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: "✅ Confirm", callback_data: `confirm_${orderId}` },
-                { text: "❌ Reject", callback_data: `reject_${orderId}` },
-              ],
-            ],
-          },
-        };
+      // ៨. លុបទំនិញ (Delete)
+      async function deleteProduct(productId) {
+        if (!confirm("តើអ្នកពិតជាចង់លុបទំនិញនេះមែនទេ?")) return;
 
         try {
-          let res = await fetch(
-            `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            },
-          );
-          let data = await res.json();
-          if (!data.ok) return false;
-
-          await fetch(APPS_SCRIPT_URL, {
+          const response = await fetch(APPS_SCRIPT_URL, {
             method: "POST",
-            body: JSON.stringify({
-              action: "NEW_ORDER",
-              orderId: orderId,
-              cart: cart,
+            body: new URLSearchParams({
+              action: "DELETE_PRODUCT",
+              id: productId,
             }),
           });
-          return true;
-        } catch (e) {
-          return false;
-        }
-      }
 
-      function startPolling(orderId) {
-        clearInterval(pollingInterval);
-        pollAttempts = 0;
-        pollingInterval = setInterval(async () => {
-          pollAttempts++;
-          if (pollAttempts > 100) {
-            clearInterval(pollingInterval);
-            showStatusOverlay("failed");
-            return;
+          const result = await response.json();
+          if (result.status === "success") {
+            alert("លុបទំនិញរួចរាល់!");
+            loadAdminData();
           }
-          try {
-            let res = await fetch(
-              `${APPS_SCRIPT_URL}?action=CHECK_STATUS&orderId=${orderId}`,
-            );
-            let data = await res.json();
-            if (data.status === "confirmed") {
-              clearInterval(pollingInterval);
-              showStatusOverlay("success");
-              clearCartLocally();
-            } else if (data.status === "rejected") {
-              clearInterval(pollingInterval);
-              showStatusOverlay("failed");
-            }
-          } catch (e) {}
-        }, 3000);
-      }
-
-      function showStatusOverlay(state) {
-        document.getElementById("paymentStatusOverlay").style.display = "flex";
-        document.getElementById("status-loading").style.display =
-          state === "loading" ? "block" : "none";
-        document.getElementById("status-success").style.display =
-          state === "success" ? "block" : "none";
-        document.getElementById("status-failed").style.display =
-          state === "failed" ? "block" : "none";
-        document.getElementById("floating-contact-btn").style.display = "none";
-        if (state === "failed" && TELEGRAM_CONTACT_LINK) {
-          document.getElementById("forced-contact-btn").href =
-            TELEGRAM_CONTACT_LINK;
+        } catch (error) {
+          alert("មិនអាចលុបទំនិញបានទេ!");
         }
       }
 
-      function closeStatusOverlay() {
-        document.getElementById("paymentStatusOverlay").style.display = "none";
-        if (TELEGRAM_CONTACT_LINK)
-          document.getElementById("floating-contact-btn").style.display =
-            "flex";
-      }
+      // ៩. ប្តូរស្ថានភាពការកុម្ម៉ង់ (Confirm/Reject)
+      async function updateOrderStatus(orderId, newStatus) {
+        const confirmMsg =
+          newStatus === "confirmed"
+            ? "តើអ្នកចង់យល់ព្រមលើការកុម្ម៉ង់នេះមែនទេ?"
+            : "តើអ្នកចង់បដិសេធការកុម្ម៉ង់នេះមែនទេ?";
+        if (!confirm(confirmMsg)) return;
 
-      function clearCartLocally() {
-        cart = []; // សម្អាតទិន្នន័យក្នុង Array cart
-        saveCart(); // រក្សាទុកការផ្លាស់ប្តូរទៅក្នុង Local Storage (ស្មើនឹងការលុប)
-        updateCartUI(); // ធ្វើបច្ចុប្បន្នភាព Interface កន្ត្រកទំនិញឱ្យទៅជាទទេវិញ
+        try {
+          const response = await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: new URLSearchParams({
+              action: "UPDATE_ORDER_STATUS",
+              orderId: orderId,
+              status: newStatus,
+            }),
+          });
+
+          const result = await response.json();
+          if (result.status === "success") {
+            loadAdminData();
+          }
+        } catch (error) {
+          alert("មានបញ្ហាក្នុងការប្តូរស្ថានភាព!");
+        }
       }
     </script>
   </body>

@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tomnerb Store - ចូលប្រើប្រាស់ / បង្កើតគណនី</title>
+
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Kantumruy+Pro:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap & FontAwesome -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      body {
+        font-family: "Poppins", "Kantumruy Pro", sans-serif;
+        background: linear-gradient(135deg, #f4f6f9 0%, #e0e8f5 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 0;
+      }
+      .auth-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        width: 100%;
+        max-width: 850px;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+      .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .auth-logo {
+        width: 70px;
+        height: 70px;
+        background: #0d6efd;
+        color: white;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 15px;
+        transform: rotate(-10deg);
+      }
+      .input-group-text {
+        background-color: transparent;
+        border-right: none;
+        color: #6c757d;
+      }
+      .form-control,
+      .form-select {
+        border-left: none;
+        padding-left: 0;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        box-shadow: none;
+        border-color: #dee2e6;
+      }
+      .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        border-radius: 0.375rem;
+      }
+      .input-group:focus-within .input-group-text,
+      .input-group:focus-within .form-control,
+      .input-group:focus-within .form-select {
+        border-color: #0d6efd;
+      }
+      .btn-primary {
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 10px;
+      }
+      .bank-section {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 12px;
+        border: 1px dashed #ced4da;
+      }
+      .bank-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .toggle-link {
+        color: #0d6efd;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .toggle-link:hover {
+        text-decoration: underline;
+      }
+
+      /* Animation classes */
+      .fade-in {
+        animation: fadeIn 0.4s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+          <div class="auth-card p-4 p-md-5 mx-auto fade-in" id="auth-container">
+            <!-- Header Logo -->
+            <div class="auth-header">
+              <div class="auth-logo shadow-sm">
+                <i class="fa-solid fa-store"></i>
+              </div>
+              <h3 class="fw-bold text-dark m-0">
+                Muslim<span class="text-primary">Store</span>
+              </h3>
+              <p class="text-muted" id="auth-subtitle">
+                សូមស្វាគមន៍មកកាន់ប្រព័ន្ធគ្រប់គ្រងហាង
+              </p>
+            </div>
+
+            <!-- ========================= LOGIN FORM ========================= -->
+            <div id="login-form" style="max-width: 450px; margin: auto">
+              <h4 class="fw-bold mb-4 text-center">ចូលប្រើប្រាស់ (Login)</h4>
+              <form onsubmit="handleLogin(event)">
+                <div class="input-group mb-3 shadow-sm">
+                  <span class="input-group-text"
+                    ><i class="fa-regular fa-envelope"></i
+                  ></span>
+                  <input
+                    type="email"
+                    class="form-control"
+                    placeholder="អ៊ីមែល (Email)"
+                    required
+                  />
+                </div>
+                <div class="input-group mb-2 shadow-sm">
+                  <span class="input-group-text"
+                    ><i class="fa-solid fa-lock"></i
+                  ></span>
+                  <input
+                    type="password"
+                    class="form-control"
+                    placeholder="លេខសម្ងាត់ (Password)"
+                    required
+                  />
+                </div>
+                <div class="text-end mb-4">
+                  <a
+                    href="#"
+                    class="text-muted text-decoration-none"
+                    style="font-size: 0.9rem"
+                    onclick="switchView('forgot')"
+                  >
+                    ភ្លេចលេខសម្ងាត់? (Forgot Password)
+                  </a>
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100 shadow-sm mb-4"
+                >
+                  ចូលគណនី (Login)
+                  <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
+                </button>
+              </form>
+              <div class="text-center text-muted">
+                មិនទាន់មានគណនីមែនទេ?
+                <a class="toggle-link" onclick="switchView('signup')"
+                  >បង្កើតគណនីថ្មី</a
+                >
+              </div>
+            </div>
+
+            <!-- ========================= SIGN UP FORM ========================= -->
+            <div id="signup-form" style="display: none">
+              <h4 class="fw-bold mb-4 text-center">
+                បង្កើតគណនីហាងថ្មី (Sign Up)
+              </h4>
+              <form id="registerForm" onsubmit="handleSignUp(event)">
+                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                  ១. ព័ត៌មានទូទៅ (General Info)
+                </h6>
+                <div class="row g-3 mb-4">
+                  <div class="col-md-6">
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"
+                        ><i class="fa-solid fa-shop"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="reg-store-name"
+                        placeholder="ឈ្មោះហាង (Store Name)"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"
+                        ><i class="fa-solid fa-tags"></i
+                      ></span>
+                      <select class="form-select" id="reg-store-type" required>
+                        <option value="" disabled selected>
+                          ជ្រើសរើសប្រភេទហាង...
+                        </option>
+                        <option value="Computer">
+                          គ្រឿងកុំព្យូទ័រ & អេឡិចត្រូនិច
+                        </option>
+                        <option value="Clothes">សម្លៀកបំពាក់ & ម៉ូដ</option>
+                        <option value="Coffee">កាហ្វេ & ភេសជ្ជៈ</option>
+                        <option value="Cosmetics">គ្រឿងសម្អាង</option>
+                        <option value="Others">ផ្សេងៗ (Others)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"
+                        ><i class="fa-regular fa-envelope"></i
+                      ></span>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="reg-email"
+                        placeholder="អ៊ីមែល (Email)"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"
+                        ><i class="fa-solid fa-phone"></i
+                      ></span>
+                      <input
+                        type="tel"
+                        class="form-control"
+                        id="reg-phone"
+                        placeholder="លេខទូរស័ព្ទ (Phone Number)"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                  ២. តំណភ្ជាប់ទូទាត់ប្រាក់ (Payment Links)
+                </h6>
+                <div class="bank-section mb-4">
+                  <p class="text-muted small mb-3">
+                    <i class="fa-solid fa-circle-info me-1"></i> សូមបញ្ចូល Link
+                    ទូទាត់ប្រាក់ (Payment Link) របស់ធនាគារនីមួយៗ
+                    ដើម្បីឲ្យអតិថិជនចុចបង់ប្រាក់នៅពេលទិញទំនិញរួច។
+                  </p>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <label class="bank-label text-primary"
+                        ><i class="fa-solid fa-building-columns"></i> ABA Bank
+                        Link</label
+                      >
+                      <input
+                        type="url"
+                        class="form-control form-control-sm mt-1"
+                        id="reg-aba"
+                        placeholder="https://link.payway..."
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="bank-label text-dark"
+                        ><i class="fa-solid fa-building-columns"></i> ACLEDA
+                        Bank Link</label
+                      >
+                      <input
+                        type="url"
+                        class="form-control form-control-sm mt-1"
+                        id="reg-acleda"
+                        placeholder="https://link.acleda..."
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="bank-label text-success"
+                        ><i class="fa-solid fa-building-columns"></i> Wing Bank
+                        Link</label
+                      >
+                      <input
+                        type="url"
+                        class="form-control form-control-sm mt-1"
+                        id="reg-wing"
+                        placeholder="https://link.wing..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                  ៣. សុវត្ថិភាព (Security)
+                </h6>
+                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                  ៣. សុវត្ថិភាព និងការអនុញ្ញាត (Security & Authorization)
+                </h6>
+
+                <!-- 🌟 បន្ថែមប្រអប់ Invite Code ត្រង់នេះ -->
+                <div class="alert alert-warning small py-2 mb-3">
+                  <i class="fa-solid fa-circle-info"></i> ការបង្កើតគណនីទាមទារ
+                  <b>លេខកូដអនុញ្ញាត (Invite Code)</b> ពីអ្នកគ្រប់គ្រងប្រព័ន្ធ។
+                </div>
+                <div
+                  class="input-group shadow-sm mb-3 border border-warning rounded"
+                >
+                  <span class="input-group-text bg-warning text-dark border-0"
+                    ><i class="fa-solid fa-key"></i
+                  ></span>
+                  <input
+                    type="text"
+                    class="form-control border-0"
+                    id="reg-invite-code"
+                    placeholder="បញ្ចូលលេខកូដអនុញ្ញាត (Admin Invite Code)"
+                    required
+                  />
+                </div>
+
+                <div class="row g-3 mb-4">
+                  <div class="col-md-6">
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"
+                        ><i class="fa-solid fa-lock"></i
+                      ></span>
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="reg-pwd"
+                        placeholder="លេខសម្ងាត់ (Password)"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="input-group shadow-sm">
+                      <span class="input-group-text"
+                        ><i class="fa-solid fa-shield-check"></i
+                      ></span>
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="reg-pwd-confirm"
+                        placeholder="បញ្ជាក់លេខសម្ងាត់ (Confirm Password)"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="col-12 text-danger small mt-1"
+                    id="pwd-error"
+                    style="display: none"
+                  >
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    លេខសម្ងាត់បញ្ជាក់មិនត្រូវគ្នាទេ!
+                  </div>
+                </div>
+
+                <div class="row mt-4">
+                  <div class="col-md-4 mx-auto">
+                    <button
+                      type="submit"
+                      class="btn btn-primary w-100 shadow-sm"
+                      id="btn-register"
+                    >
+                      ចុះឈ្មោះ (Sign Up)
+                      <i class="fa-solid fa-user-plus ms-2"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <div class="text-center text-muted mt-4">
+                មានគណនីរួចហើយ?
+                <a class="toggle-link" onclick="switchView('login')"
+                  >ត្រឡប់ទៅការចូលប្រើ (Login)</a
+                >
+              </div>
+            </div>
+
+            <!-- ========================= FORGOT PASSWORD FORM ========================= -->
+            <div
+              id="forgot-form"
+              style="display: none; max-width: 450px; margin: auto"
+            >
+              <h4 class="fw-bold mb-3 text-center">ភ្លេចលេខសម្ងាត់?</h4>
+              <p class="text-center text-muted mb-4" style="font-size: 0.9rem">
+                សូមបញ្ចូលអ៊ីមែលរបស់អ្នកដែលធ្លាប់បានចុះឈ្មោះ។
+                យើងនឹងផ្ញើតំណភ្ជាប់ដើម្បីកំណត់លេខសម្ងាត់ថ្មី (Reset Password)។
+              </p>
+              <form onsubmit="handleForgot(event)">
+                <div class="input-group mb-4 shadow-sm">
+                  <span class="input-group-text"
+                    ><i class="fa-regular fa-envelope"></i
+                  ></span>
+                  <input
+                    type="email"
+                    class="form-control"
+                    placeholder="អ៊ីមែល (Email)"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-dark w-100 shadow-sm mb-4">
+                  បញ្ជូន (Send Reset Link)
+                </button>
+              </form>
+              <div class="text-center text-muted">
+                <a class="toggle-link" onclick="switchView('login')"
+                  ><i class="fa-solid fa-arrow-left me-1"></i> ត្រឡប់ក្រោយ (Back
+                  to Login)</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Function សម្រាប់ផ្លាស់ប្តូរទំព័រ (Login, Sign Up, Forgot)
+      function switchView(view) {
+        const loginForm = document.getElementById("login-form");
+        const signupForm = document.getElementById("signup-form");
+        const forgotForm = document.getElementById("forgot-form");
+        const container = document.getElementById("auth-container");
+        const subtitle = document.getElementById("auth-subtitle");
+
+        // Reset Animation
+        container.classList.remove("fade-in");
+        void container.offsetWidth; // trigger reflow
+        container.classList.add("fade-in");
+
+        loginForm.style.display = "none";
+        signupForm.style.display = "none";
+        forgotForm.style.display = "none";
+
+        if (view === "login") {
+          loginForm.style.display = "block";
+          subtitle.innerText = "សូមស្វាគមន៍មកកាន់ប្រព័ន្ធគ្រប់គ្រងហាង";
+        } else if (view === "signup") {
+          signupForm.style.display = "block";
+          subtitle.innerText = "ចាប់ផ្តើមបើកហាងអនឡាញរបស់អ្នកថ្ងៃនេះ";
+        } else if (view === "forgot") {
+          forgotForm.style.display = "block";
+          subtitle.innerText = "សង្គ្រោះគណនីរបស់អ្នក";
+        }
+      }
+
+      // Function សម្រាប់ Login (ចំណុចនេះអ្នកត្រូវភ្ចាប់ទៅ Apps Script ពេលក្រោយ)
+      function handleLogin(event) {
+        event.preventDefault();
+        // Simulation: បន្ទាប់ពី Login ជោគជ័យ វានឹងរត់ទៅទំព័រ Admin
+        alert("ចូលប្រើប្រាស់ជោគជ័យ!");
+        window.location.href = "admin.html"; // ដូរឈ្មោះអោយត្រូវនឹងទំព័រ Admin របស់អ្នក
+      }
+
+      // Function សម្រាប់ Sign Up & ឆែក Password និង Invite Code
+      function handleSignUp(event) {
+        event.preventDefault();
+
+        // 🌟 កំណត់លេខកូដសម្ងាត់របស់អ្នក (Admin Code) នៅទីនេះ
+        // អ្នកអាចប្តូរវាទៅជាអ្វីក៏បាន ឧ. "FARORS-2026"
+        const ADMIN_INVITE_CODE = "ADMIN-12345";
+
+        const inviteCode = document.getElementById("reg-invite-code").value;
+        const pwd1 = document.getElementById("reg-pwd").value;
+        const pwd2 = document.getElementById("reg-pwd-confirm").value;
+        const errorMsg = document.getElementById("pwd-error");
+        const btnReg = document.getElementById("btn-register");
+
+        // ១. ឆែកមើលលេខកូដអនុញ្ញាត (Invite Code Check)
+        if (inviteCode !== ADMIN_INVITE_CODE) {
+          alert(
+            "❌ លេខកូដអនុញ្ញាតមិនត្រឹមត្រូវទេ! អ្នកមិនអាចបង្កើតគណនីបានឡើយ។ សូមទាក់ទង Admin។",
+          );
+          return;
+        }
+
+        // ២. ឆែកមើលថា Password ដូចគ្នាឬអត់
+        if (pwd1 !== pwd2) {
+          errorMsg.style.display = "block";
+          return;
+        } else {
+          errorMsg.style.display = "none";
+        }
+
+        // ត្រៀមទិន្នន័យ (ដើម្បីបញ្ជូនទៅ Apps Script នៅថ្ងៃក្រោយ)
+        const storeData = {
+          name: document.getElementById("reg-store-name").value,
+          type: document.getElementById("reg-store-type").value,
+          email: document.getElementById("reg-email").value,
+          phone: document.getElementById("reg-phone").value,
+          banks: {
+            aba: document.getElementById("reg-aba").value,
+            acleda: document.getElementById("reg-acleda").value,
+            wing: document.getElementById("reg-wing").value,
+          },
+          password: pwd1,
+        };
+
+        console.log("ទិន្នន័យត្រៀមបញ្ជូន:", storeData);
+
+        // Simulation Loading
+        btnReg.innerHTML =
+          '<span class="spinner-border spinner-border-sm me-2"></span>កំពុងបង្កើត...';
+        btnReg.disabled = true;
+
+        setTimeout(() => {
+          alert("បង្កើតគណនីហាងជោគជ័យ! សូមពិនិត្យអ៊ីមែលរបស់អ្នក។");
+          btnReg.innerHTML =
+            'ចុះឈ្មោះ (Sign Up) <i class="fa-solid fa-user-plus ms-2"></i>';
+          btnReg.disabled = false;
+          // លុបកូដដែលវាយចេញវិញ
+          document.getElementById("reg-invite-code").value = "";
+          switchView("login"); // ត្រឡប់ទៅកន្លែង Login វិញពេលបង្កើតរួច
+        }, 1500);
+      }
+      // Function សម្រាប់ Forgot Password
+      function handleForgot(event) {
+        event.preventDefault();
+        alert(
+          "តំណភ្ជាប់សម្រាប់ប្តូរលេខសម្ងាត់ថ្មី (Reset Link) ត្រូវបានផ្ញើទៅកាន់អ៊ីមែលរបស់អ្នកហើយ។",
+        );
+        switchView("login");
+      }
+    </script>
+  </body>
+</html>
