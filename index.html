@@ -22,7 +22,7 @@
     />
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
+  <body class="d-flex flex-column min-vh-100">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg sticky-top glass-nav shadow-sm py-2">
       <div class="container-fluid px-4">
@@ -79,7 +79,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="container-fluid px-4 py-5">
+    <main class="container-fluid px-4 py-5 flex-grow-1">
       <div id="loading-spinner" class="text-center py-5 mt-5">
         <div
           class="spinner-border text-primary mb-3"
@@ -95,6 +95,13 @@
       ></div>
       <div class="row g-4" id="product-grid" style="display: none"></div>
     </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-3 bg-light text-center border-top">
+      <p class="mb-0 text-muted fw-bold">
+        <i class="fa-solid fa-bolt text-warning"></i> Powered By Farors
+      </p>
+    </footer>
 
     <!-- Cart Offcanvas -->
     <div
@@ -120,10 +127,33 @@
             <p>មិនទាន់មានទំនិញទេ</p>
           </div>
         </div>
+
+        <!-- កន្លែងបញ្ចូលព័ត៌មានអ្នកទិញ -->
         <div
-          class="p-4 bg-white border-top shadow-lg"
-          style="border-radius: 20px 20px 0 0"
+          class="p-3 bg-white border-top shadow-sm"
+          id="customer-info-section"
         >
+          <h6 class="fw-bold mb-2 text-dark">
+            <i class="fa-solid fa-address-card me-1 text-primary"></i>
+            ព័ត៌មានអ្នកទិញ
+          </h6>
+          <input
+            type="tel"
+            id="customer-phone"
+            class="form-control mb-2"
+            placeholder="បញ្ចូលលេខទូរស័ព្ទ *"
+            required
+          />
+          <textarea
+            id="customer-location"
+            class="form-control"
+            rows="2"
+            placeholder="បញ្ចូលទីតាំងច្បាស់លាស់ *"
+            required
+          ></textarea>
+        </div>
+
+        <div class="p-4 bg-white border-top shadow-lg">
           <div class="d-flex justify-content-between mb-3">
             <span class="fs-5 text-muted">Total</span
             ><span class="fs-3 fw-bold text-dark" id="cart-total">$0.00</span>
@@ -139,19 +169,11 @@
     </div>
 
     <!-- Payment Bank Selection Modal -->
-    <div
-      class="modal fade"
-      id="paymentModal"
-      tabindex="-1"
-      aria-labelledby="paymentModalLabel"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
           <div class="modal-header bg-light border-bottom-0">
-            <h5 class="modal-title fw-bold" id="paymentModalLabel">
-              ជ្រើសរើសធនាគារដើម្បីបង់ប្រាក់
-            </h5>
+            <h5 class="modal-title fw-bold">ជ្រើសរើសធនាគារដើម្បីបង់ប្រាក់</h5>
             <button
               type="button"
               class="btn-close"
@@ -167,23 +189,21 @@
 
             <div class="d-grid gap-3">
               <button
-                class="btn btn-aba py-3 fw-bold fs-5 shadow-sm rounded-3"
+                class="btn btn-primary py-3 fw-bold fs-5 shadow-sm rounded-3"
                 onclick="processBankPayment('ABA Bank')"
               >
                 <i class="fa-solid fa-building-columns me-2"></i> បង់តាមរយៈ ABA
                 Bank
               </button>
-
               <button
-                class="btn btn-acleda py-3 fw-bold fs-5 shadow-sm rounded-3"
+                class="btn btn-dark py-3 fw-bold fs-5 shadow-sm rounded-3"
                 onclick="processBankPayment('ACLEDA Bank')"
               >
                 <i class="fa-solid fa-building-columns me-2"></i> បង់តាមរយៈ
                 ACLEDA Bank
               </button>
-
               <button
-                class="btn btn-wing py-3 fw-bold fs-5 shadow-sm rounded-3"
+                class="btn btn-success py-3 fw-bold fs-5 shadow-sm rounded-3"
                 onclick="processBankPayment('Wing Bank')"
               >
                 <i class="fa-solid fa-building-columns me-2"></i> បង់តាមរយៈ Wing
@@ -205,12 +225,9 @@
       const APPS_SCRIPT_URL =
         "https://script.google.com/macros/s/AKfycbw59Co5i8dxJ7yijisHHweGRSKK-VSx6lnUf2paqkIz8h-3hIKNRvSe_ScL6U2bmFcWUw/exec";
 
-      // ព័ត៌មាន Telegram Bot
       const TELEGRAM_BOT_TOKEN =
         "8267523556:AAFzqBMutjD4PsFuZYvDxXt7d7VL0W-pKEk";
       const TELEGRAM_CHAT_ID = "1382677305";
-
-      // រូបតំណាងហាងរបស់អ្នកសម្រាប់ផ្ញើទៅ Telegram (អ្នកអាចប្តូរ Link រូបភាពហាងរបស់អ្នកនៅទីនេះបាន)
       const STORE_LOGO_URL =
         "https://img.freepik.com/free-vector/receipt-icon-with-check-mark-flat-style_1150-35002.jpg";
 
@@ -218,6 +235,7 @@
       let cart = [];
       let isPOSMode = false;
       let paymentLink = "https://pay.ababank.com/oRF8/yxsuiw51";
+      let sellerTelegramLink = "https://t.me/yourusername"; // Default
 
       document.addEventListener("DOMContentLoaded", () => {
         loadCart();
@@ -236,9 +254,7 @@
             }
           },
           error: function (error) {
-            showError(
-              "មិនអាចភ្ជាប់ទៅកាន់ Google Sheets បានទេ។ សូមពិនិត្យ Internet ឬ Link ម្តងទៀត!",
-            );
+            showError("មិនអាចភ្ជាប់ទៅកាន់ Google Sheets បានទេ។");
           },
         });
 
@@ -258,8 +274,12 @@
       }
 
       function processData(data) {
-        if (data.length > 0 && data[0]["payment link"]) {
-          paymentLink = data[0]["payment link"];
+        if (data.length > 0) {
+          if (data[0]["payment link"]) paymentLink = data[0]["payment link"];
+          // ទាញយក Telegram link ពី Sheets (ឈ្មោះ column 'telegram' ឫ 'telegram link')
+          if (data[0]["telegram"]) sellerTelegramLink = data[0]["telegram"];
+          else if (data[0]["telegram link"])
+            sellerTelegramLink = data[0]["telegram link"];
         }
 
         allProducts = data
@@ -270,56 +290,14 @@
               "",
             );
             let rawName = item["name"] || "Unnamed Product";
-            let rawCategory = item["category"] ? item["category"].trim() : "";
-            let nameLower = rawName.toLowerCase();
-
-            const drinkKeywords = [
-              "coffee",
-              "tea",
-              "water",
-              "juice",
-              "milk",
-              "drink",
-              "espresso",
-              "roast",
-              "coca",
-              "pepsi",
-              "កាហ្វេ",
-              "តែ",
-              "ទឹក",
-              "ភេសជ្ជៈ",
-            ];
-            const foodKeywords = [
-              "rice",
-              "burger",
-              "pizza",
-              "noodle",
-              "bread",
-              "cake",
-              "food",
-              "snack",
-              "បាយ",
-              "នំ",
-              "សាច់",
-              "អាហារ",
-            ];
-
-            let finalCategory = rawCategory;
-            if (finalCategory === "ភេសជ្ជៈ") finalCategory = "Drink";
-            else if (finalCategory === "អាហារ") finalCategory = "Food";
-
-            if (finalCategory === "") {
-              if (drinkKeywords.some((kw) => nameLower.includes(kw)))
-                finalCategory = "Drink";
-              else if (foodKeywords.some((kw) => nameLower.includes(kw)))
-                finalCategory = "Food";
-              else finalCategory = "General";
-            }
+            let rawCategory = item["category"]
+              ? item["category"].trim()
+              : "General";
 
             return {
               id: item["id"] || "",
               name: rawName,
-              category: finalCategory,
+              category: rawCategory,
               image:
                 item["image url"] ||
                 "https://via.placeholder.com/300?text=No+Image",
@@ -488,9 +466,15 @@
       function togglePOSMode() {
         isPOSMode = document.getElementById("posModeToggle").checked;
         document.body.classList.toggle("pos-mode", isPOSMode);
+
+        // លាក់ប្រអប់បំពេញព័ត៌មាន បើជា POS Mode
+        document.getElementById("customer-info-section").style.display =
+          isPOSMode ? "none" : "block";
+
         document.getElementById("cartTitle").innerHTML = isPOSMode
           ? '<i class="fa-solid fa-desktop text-success"></i> POS Register'
           : '<i class="fa-solid fa-bag-shopping text-primary"></i> Your Cart';
+
         const btn = document.getElementById("checkout-btn");
         btn.innerHTML = isPOSMode
           ? '<i class="fa-solid fa-print"></i> Print & Pay'
@@ -505,6 +489,19 @@
           alert("រទេះទទេស្អាត! សូមជ្រើសរើសទំនិញជាមុនសិន។");
           return;
         }
+
+        // ត្រួតពិនិត្យលេខទូរស័ព្ទ និងទីតាំង (លុះត្រាតែមិនមែន POS)
+        if (!isPOSMode) {
+          const phone = document.getElementById("customer-phone").value.trim();
+          const location = document
+            .getElementById("customer-location")
+            .value.trim();
+          if (!phone || !location) {
+            alert("សូមបំពេញលេខទូរស័ព្ទ និង ទីតាំងឲ្យបានច្បាស់លាស់សិន!");
+            return;
+          }
+        }
+
         const totalAmountText = document.getElementById("cart-total").innerText;
 
         if (isPOSMode) {
@@ -515,7 +512,7 @@
           alert(
             `ទូទាត់ជោគជ័យ!\nសរុប: ${totalAmountText}\nកំពុងព្រីនវិក្កយបត្រ...`,
           );
-          clearCart();
+          clearCartLocalOnly();
         } else {
           const cartEl = document.getElementById("cartOffcanvas");
           const cartInstance = bootstrap.Offcanvas.getInstance(cartEl);
@@ -529,17 +526,21 @@
         }
       }
 
-      // --- មុខងារផ្ញើសាររូបថត និង ប៊ូតុង ទៅកាន់ Telegram ---
       function sendTelegramNotification(bankName, totalAmountText) {
         if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
 
-        // ទាញយក ម៉ោង និង ថ្ងៃខែ
-        const now = new Date();
-        const dateStr = now.toLocaleDateString("en-GB"); // ទម្រង់ DD/MM/YYYY
-        const timeStr = now.toLocaleTimeString("en-US"); // ទម្រង់ HH:MM:SS AM/PM
-        const orderId = "INV" + Date.now().toString().slice(-6); // បង្កើតលេខកូដវិក្កយបត្រ
+        const phone = isPOSMode
+          ? "POS (អតិថិជនផ្ទាល់)"
+          : document.getElementById("customer-phone").value.trim();
+        const location = isPOSMode
+          ? "ហាងផ្ទាល់"
+          : document.getElementById("customer-location").value.trim();
 
-        // រៀបចំបញ្ជីទំនិញមានតម្លៃរាយ និងសរុប
+        const now = new Date();
+        const dateStr = now.toLocaleDateString("en-GB");
+        const timeStr = now.toLocaleTimeString("en-US");
+        const orderId = "INV" + Date.now().toString().slice(-6);
+
         let itemsList = cart
           .map(
             (item, index) =>
@@ -547,7 +548,11 @@
           )
           .join("\n");
 
-        // ទម្រង់សារ (Caption)
+        // វេចខ្ចប់ទិន្នន័យ Cart ដើម្បីបញ្ជូនទៅ Telegram ឲ្យ Apps Script ដឹងពេលកាត់ស្តុក
+        const cartDataString = JSON.stringify(
+          cart.map((c) => ({ id: c.id, qty: c.qty })),
+        );
+
         const caption =
           `🧾 <b>វិក្កយបត្រថ្មី (New Invoice)</b>\n` +
           `━━━━━━━━━━━━━━━━━━━━\n` +
@@ -555,25 +560,30 @@
           `📅 <b>កាលបរិច្ឆេទ:</b> ${dateStr}\n` +
           `⏰ <b>ម៉ោង:</b> ${timeStr}\n` +
           `🏦 <b>វិធីបង់ប្រាក់:</b> ${bankName}\n` +
+          `📞 <b>លេខទូរស័ព្ទ:</b> ${phone}\n` +
+          `📍 <b>ទីតាំង:</b> ${location}\n` +
           `━━━━━━━━━━━━━━━━━━━━\n` +
           `<b>បញ្ជីទំនិញ:</b>\n${itemsList}\n` +
           `━━━━━━━━━━━━━━━━━━━━\n` +
           `💰 <b>ទឹកប្រាក់សរុប:</b> <b>${totalAmountText}</b>\n\n` +
-          `<i>⚠️ សូមពិនិត្យមើលគណនីធនាគារមុននឹងបញ្ជាក់។</i>`;
+          `<i>⚠️ ចុច Confirm ដើម្បីកាត់ស្តុក | Reject បដិសេធ</i>`;
 
-        // ប្រើប្រាស់ sendPhoto API ដើម្បីផ្ញើជារូបថតអមជាមួយអក្សរ និងប៊ូតុង
         const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
-
         const payload = {
           chat_id: TELEGRAM_CHAT_ID,
-          photo: STORE_LOGO_URL, // ផ្ញើជារូបភាពវិក្កយបត្រ ឬ Logo ហាង
+          photo: STORE_LOGO_URL,
           caption: caption,
           parse_mode: "HTML",
           reply_markup: {
             inline_keyboard: [
               [
+                // បញ្ជូន orderId ទៅកាន់ Webhook ពេលចុច
                 { text: "✅ Confirm", callback_data: `confirm_${orderId}` },
                 { text: "❌ Reject", callback_data: `reject_${orderId}` },
+              ],
+              [
+                // ទាញយក Link ពី Google Sheets
+                { text: "💬 Contact Us", url: sellerTelegramLink },
               ],
             ],
           },
@@ -583,53 +593,27 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              console.error(
-                "មិនអាចផ្ញើសារទៅ Telegram បានទេ សូមពិនិត្យមើល Token ឬ Chat ID ម្តងទៀត។",
-              );
-            }
-          })
-          .catch((error) => console.error("Error Telegram API:", error));
+        }).catch((err) => console.error(err));
       }
 
       function processBankPayment(bankName) {
         const totalAmountText = document.getElementById("cart-total").innerText;
         sendTelegramNotification(bankName, totalAmountText);
 
-        if (bankName === "ABA Bank") {
-          window.open(paymentLink, "_blank");
-        } else {
-          alert(
-            `កំពុងដំណើរការទៅកាន់កម្មវិធី ${bankName}...\nសូមធ្វើការស្កេន ឬ វាយបញ្ចូលគណនី។`,
-          );
-        }
+        if (bankName === "ABA Bank") window.open(paymentLink, "_blank");
+        else alert(`កំពុងដំណើរការទៅកាន់កម្មវិធី ${bankName}...`);
 
         const modalEl = document.getElementById("paymentModal");
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
-        clearCart();
+        clearCartLocalOnly();
       }
 
-      async function updateStockInGoogleSheet() {
-        try {
-          await fetch(APPS_SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify(cart),
-          });
-        } catch (error) {
-          console.error("Update stock error:", error);
-        }
-      }
+      // ដោយសារចង់អោយកាត់ស្តុកនៅពេលចុច Confirm លើ Telegram យើងមិនកាត់វាឥឡូវទេ យើងគ្រាន់តែលុបពីកន្រ្តក
+      function clearCartLocalOnly() {
+        // បញ្ជូនទៅ Apps script អោយដឹងសិនក៏បាន តែបើចង់កាត់ពី Telegram សុទ្ធ ទុក Script អោយធ្វើការងារនេះ (តម្រូវអោយរៀបចំ Webhook)
+        // updateStockInGoogleSheet(); <- លាក់សិន ឬ ប្រើសម្រាប់បញ្ជូនជា Pending
 
-      async function clearCart() {
-        await updateStockInGoogleSheet();
-        cart.forEach((cartItem) => {
-          const product = allProducts.find((p) => p.id === cartItem.id);
-          if (product) product.stock -= cartItem.qty;
-        });
-        renderProducts(allProducts);
         cart = [];
         updateCartUI();
       }
