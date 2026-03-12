@@ -202,22 +202,25 @@
     <script>
       const SHEET_URL =
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vRtHQITBdbzdbRvUASp2wIn6ficZcq7IiYmyhIHMXNFMmNYZ8qwnIJXdi-a6Nz_dm0E3ArLIw8n1y76/pub?output=csv";
+      const APPS_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbw59Co5i8dxJ7yijisHHweGRSKK-VSx6lnUf2paqkIz8h-3hIKNRvSe_ScL6U2bmFcWUw/exec";
 
       // ព័ត៌មាន Telegram Bot
       const TELEGRAM_BOT_TOKEN =
         "8267523556:AAFzqBMutjD4PsFuZYvDxXt7d7VL0W-pKEk";
       const TELEGRAM_CHAT_ID = "1382677305";
 
+      // រូបតំណាងហាងរបស់អ្នកសម្រាប់ផ្ញើទៅ Telegram (អ្នកអាចប្តូរ Link រូបភាពហាងរបស់អ្នកនៅទីនេះបាន)
+      const STORE_LOGO_URL =
+        "https://img.freepik.com/free-vector/receipt-icon-with-check-mark-flat-style_1150-35002.jpg";
+
       let allProducts = [];
       let cart = [];
       let isPOSMode = false;
-
       let paymentLink = "https://pay.ababank.com/oRF8/yxsuiw51";
 
       document.addEventListener("DOMContentLoaded", () => {
-        // ទាញទិន្នន័យពី LocalStorage មកវិញពេលបើក Browser
         loadCart();
-
         Papa.parse(SHEET_URL, {
           download: true,
           header: true,
@@ -266,11 +269,10 @@
               /[^0-9.]/g,
               "",
             );
-
             let rawName = item["name"] || "Unnamed Product";
             let rawCategory = item["category"] ? item["category"].trim() : "";
-
             let nameLower = rawName.toLowerCase();
+
             const drinkKeywords = [
               "coffee",
               "tea",
@@ -303,18 +305,15 @@
             ];
 
             let finalCategory = rawCategory;
-
             if (finalCategory === "ភេសជ្ជៈ") finalCategory = "Drink";
             else if (finalCategory === "អាហារ") finalCategory = "Food";
 
             if (finalCategory === "") {
-              if (drinkKeywords.some((kw) => nameLower.includes(kw))) {
+              if (drinkKeywords.some((kw) => nameLower.includes(kw)))
                 finalCategory = "Drink";
-              } else if (foodKeywords.some((kw) => nameLower.includes(kw))) {
+              else if (foodKeywords.some((kw) => nameLower.includes(kw)))
                 finalCategory = "Food";
-              } else {
-                finalCategory = "General";
-              }
+              else finalCategory = "General";
             }
 
             return {
@@ -342,16 +341,12 @@
 
         generateCategories();
         renderProducts(allProducts);
-
-        // ពេលទាញ Product មកចប់ ឆែកមើលក្រែងលោមានទំនិញខ្លះក្នុង Cart អស់ស្តុក
         validateCartAgainstStock();
       }
 
-      // --- អនុគមន៍ថ្មីសម្រាប់ Save និង Load ទិន្នន័យ (LocalStorage) ---
       function saveCart() {
         localStorage.setItem("smartStoreCart", JSON.stringify(cart));
       }
-
       function loadCart() {
         const savedCart = localStorage.getItem("smartStoreCart");
         if (savedCart) {
@@ -373,7 +368,6 @@
         saveCart();
         updateCartUI();
       }
-      // -----------------------------------------------------------
 
       function generateCategories() {
         const container = document.getElementById("category-filters");
@@ -406,24 +400,24 @@
         productsToRender.forEach((p) => {
           const inStock = p.stock > 0;
           const cardHTML = `
-                  <div class="col-12 col-sm-6 col-md-4 col-xl-3">
-                      <div class="product-card">
-                          <div class="img-container">
-                              <span class="badge-stock ${inStock ? "" : "text-danger"}"><i class="fa-solid fa-box me-1"></i> ${inStock ? p.stock + " In Stock" : "Out of Stock"}</span>
-                              <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
-                          </div>
-                          <h4 class="product-title">${p.name}</h4>
-                          <p class="product-desc">${p.desc}</p>
-                          <div class="price-box">
-                              <span class="current-price">$${p.price.toFixed(2)}</span>
-                              ${p.oldPrice > p.price ? `<span class="old-price">$${p.oldPrice.toFixed(2)}</span>` : ""}
-                          </div>
-                          <button class="btn-add w-100" onclick="addToCart('${p.id}')" ${!inStock ? "disabled" : ""}>
-                              <i class="fa-solid fa-cart-plus me-1"></i> ${inStock ? "Add to Cart" : "Sold Out"}
-                          </button>
-                      </div>
-                  </div>
-              `;
+                <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+                    <div class="product-card">
+                        <div class="img-container">
+                            <span class="badge-stock ${inStock ? "" : "text-danger"}"><i class="fa-solid fa-box me-1"></i> ${inStock ? p.stock + " In Stock" : "Out of Stock"}</span>
+                            <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                        </div>
+                        <h4 class="product-title">${p.name}</h4>
+                        <p class="product-desc">${p.desc}</p>
+                        <div class="price-box">
+                            <span class="current-price">$${p.price.toFixed(2)}</span>
+                            ${p.oldPrice > p.price ? `<span class="old-price">$${p.oldPrice.toFixed(2)}</span>` : ""}
+                        </div>
+                        <button class="btn-add w-100" onclick="addToCart('${p.id}')" ${!inStock ? "disabled" : ""}>
+                            <i class="fa-solid fa-cart-plus me-1"></i> ${inStock ? "Add to Cart" : "Sold Out"}
+                        </button>
+                    </div>
+                </div>
+            `;
           grid.innerHTML += cardHTML;
         });
       }
@@ -441,7 +435,7 @@
           cart.push({ ...product, qty: 1 });
         }
         updateCartUI();
-        saveCart(); // Save ពេល Add ថ្មី
+        saveCart();
       }
 
       function updateCartUI() {
@@ -459,19 +453,19 @@
             total += item.price * item.qty;
             count += item.qty;
             container.innerHTML += `
-                      <div class="cart-item shadow-sm">
-                          <img src="${item.image}" class="cart-img" onerror="this.src='https://via.placeholder.com/70'">
-                          <div class="flex-grow-1 overflow-hidden">
-                              <h6 class="m-0 fw-bold text-truncate">${item.name}</h6>
-                              <div class="text-primary fw-bold mt-1">$${(item.price * item.qty).toFixed(2)}</div>
-                          </div>
-                          <div class="qty-control">
-                              <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
-                              <span class="px-2 fw-bold text-dark">${item.qty}</span>
-                              <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
-                          </div>
-                      </div>
-                  `;
+                    <div class="cart-item shadow-sm">
+                        <img src="${item.image}" class="cart-img" onerror="this.src='https://via.placeholder.com/70'">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <h6 class="m-0 fw-bold text-truncate">${item.name}</h6>
+                            <div class="text-primary fw-bold mt-1">$${(item.price * item.qty).toFixed(2)}</div>
+                        </div>
+                        <div class="qty-control">
+                            <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
+                            <span class="px-2 fw-bold text-dark">${item.qty}</span>
+                            <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
           });
         }
         badge.innerText = count;
@@ -481,19 +475,14 @@
       function updateQty(index, change) {
         const item = cart[index];
         const product = allProducts.find((p) => p.id === item.id);
-
-        if (product) {
-          if (change === 1 && item.qty >= product.stock) {
-            alert("លើសចំនួនស្តុក!");
-            return;
-          }
+        if (product && change === 1 && item.qty >= product.stock) {
+          alert("លើសចំនួនស្តុក!");
+          return;
         }
-
         item.qty += change;
         if (item.qty <= 0) cart.splice(index, 1);
-
         updateCartUI();
-        saveCart(); // Save ពេលបូកដកចំនួន
+        saveCart();
       }
 
       function togglePOSMode() {
@@ -516,11 +505,9 @@
           alert("រទេះទទេស្អាត! សូមជ្រើសរើសទំនិញជាមុនសិន។");
           return;
         }
-
         const totalAmountText = document.getElementById("cart-total").innerText;
 
         if (isPOSMode) {
-          // បើនៅ POS Mode ក៏អាចផ្ញើ Telegram បានដែរ (បើមិនចង់ អាចលុបឃ្លាបញ្ជូន Telegram ចេញបាន)
           sendTelegramNotification(
             "សាច់ប្រាក់សុទ្ធ (POS Mode)",
             totalAmountText,
@@ -533,7 +520,6 @@
           const cartEl = document.getElementById("cartOffcanvas");
           const cartInstance = bootstrap.Offcanvas.getInstance(cartEl);
           if (cartInstance) cartInstance.hide();
-
           document.getElementById("modal-total-amount").innerText =
             totalAmountText;
           const paymentModal = new bootstrap.Modal(
@@ -543,36 +529,60 @@
         }
       }
 
-      // --- មុខងារផ្ញើសារទៅ Telegram ---
+      // --- មុខងារផ្ញើសាររូបថត និង ប៊ូតុង ទៅកាន់ Telegram ---
       function sendTelegramNotification(bankName, totalAmountText) {
         if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
 
-        // រៀបចំបញ្ជីទំនិញ
+        // ទាញយក ម៉ោង និង ថ្ងៃខែ
+        const now = new Date();
+        const dateStr = now.toLocaleDateString("en-GB"); // ទម្រង់ DD/MM/YYYY
+        const timeStr = now.toLocaleTimeString("en-US"); // ទម្រង់ HH:MM:SS AM/PM
+        const orderId = "INV" + Date.now().toString().slice(-6); // បង្កើតលេខកូដវិក្កយបត្រ
+
+        // រៀបចំបញ្ជីទំនិញមានតម្លៃរាយ និងសរុប
         let itemsList = cart
           .map(
-            (item) =>
-              `▪️ ${item.name} x${item.qty} ($${(item.price * item.qty).toFixed(2)})`,
+            (item, index) =>
+              `${index + 1}. ${item.name}\n   └ ${item.qty} x $${item.price.toFixed(2)} = $${(item.price * item.qty).toFixed(2)}`,
           )
           .join("\n");
 
-        // ទម្រង់សារដែលនឹងត្រូវបង្ហាញ
-        const message =
-          `🔔 <b>មានការបញ្ជាទិញថ្មី (រង់ចាំការទូទាត់)</b>\n\n` +
+        // ទម្រង់សារ (Caption)
+        const caption =
+          `🧾 <b>វិក្កយបត្រថ្មី (New Invoice)</b>\n` +
+          `━━━━━━━━━━━━━━━━━━━━\n` +
+          `🔢 <b>លេខរៀង:</b> #${orderId}\n` +
+          `📅 <b>កាលបរិច្ឆេទ:</b> ${dateStr}\n` +
+          `⏰ <b>ម៉ោង:</b> ${timeStr}\n` +
           `🏦 <b>វិធីបង់ប្រាក់:</b> ${bankName}\n` +
+          `━━━━━━━━━━━━━━━━━━━━\n` +
+          `<b>បញ្ជីទំនិញ:</b>\n${itemsList}\n` +
+          `━━━━━━━━━━━━━━━━━━━━\n` +
           `💰 <b>ទឹកប្រាក់សរុប:</b> <b>${totalAmountText}</b>\n\n` +
-          `📦 <b>បញ្ជីទំនិញ:</b>\n${itemsList}\n\n` +
-          `⚠️ <i>សូមពិនិត្យមើលក្នុងកម្មវិធីធនាគាររបស់អ្នក ដើម្បីបញ្ជាក់ថាទឹកប្រាក់ពិតជាបានចូលត្រឹមត្រូវ មុននឹងរៀបចំទំនិញ។</i>`;
+          `<i>⚠️ សូមពិនិត្យមើលគណនីធនាគារមុននឹងបញ្ជាក់។</i>`;
 
-        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        // ប្រើប្រាស់ sendPhoto API ដើម្បីផ្ញើជារូបថតអមជាមួយអក្សរ និងប៊ូតុង
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
+
+        const payload = {
+          chat_id: TELEGRAM_CHAT_ID,
+          photo: STORE_LOGO_URL, // ផ្ញើជារូបភាពវិក្កយបត្រ ឬ Logo ហាង
+          caption: caption,
+          parse_mode: "HTML",
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: "✅ Confirm", callback_data: `confirm_${orderId}` },
+                { text: "❌ Reject", callback_data: `reject_${orderId}` },
+              ],
+            ],
+          },
+        };
 
         fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: message,
-            parse_mode: "HTML",
-          }),
+          body: JSON.stringify(payload),
         })
           .then((response) => {
             if (!response.ok) {
@@ -586,11 +596,8 @@
 
       function processBankPayment(bankName) {
         const totalAmountText = document.getElementById("cart-total").innerText;
-
-        // ១. បាញ់សារចូល Telegram ភ្លាមៗ ពេលចុចបង់ប្រាក់
         sendTelegramNotification(bankName, totalAmountText);
 
-        // ២. បើកកម្មវិធីបង់ប្រាក់
         if (bankName === "ABA Bank") {
           window.open(paymentLink, "_blank");
         } else {
@@ -599,17 +606,11 @@
           );
         }
 
-        // ៣. បិទ Modal
         const modalEl = document.getElementById("paymentModal");
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
-
-        // ៤. សម្អាតទំនិញចេញពីកន្ត្រក
         clearCart();
       }
-
-      const APPS_SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbxOuP5gbuLsldj9T4Og9AF-qUGveds2wg9f8ph0uEjZaDRCosiV11vrpx5QQB3y8bE/exec";
 
       async function updateStockInGoogleSheet() {
         try {
@@ -622,20 +623,14 @@
         }
       }
 
-      // បន្ទាប់មកហៅវាប្រើក្នុង function clearCart()
       async function clearCart() {
-        // បើចង់ឱ្យដកស្តុកក្នុង Sheets ផង
         await updateStockInGoogleSheet();
-
-        // បន្ទាប់មកធ្វើដូចជម្រើសទី ១ ខាងលើ
         cart.forEach((cartItem) => {
           const product = allProducts.find((p) => p.id === cartItem.id);
           if (product) product.stock -= cartItem.qty;
         });
-
         renderProducts(allProducts);
         cart = [];
-        saveCart();
         updateCartUI();
       }
     </script>
