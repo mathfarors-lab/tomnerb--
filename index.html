@@ -6,9 +6,7 @@
     <title>Tomnerb-Store - POS & E-Commerce</title>
 
     <link rel="manifest" href="manifest.json" />
-
     <meta name="theme-color" content="#000000" />
-
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
@@ -16,7 +14,6 @@
     />
     <meta name="apple-mobile-web-app-title" content="Tomnerb" />
     <link rel="apple-touch-icon" href="logo.png" />
-
     <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
 
     <link
@@ -32,7 +29,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="style.css" />
-    <link rel="manifest" href="manifest.json" />
+
     <style>
       body {
         display: flex;
@@ -75,10 +72,6 @@
         color: white;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
       }
-      .floating-chat-btn i {
-        font-size: 35px;
-        margin-right: 2px;
-      }
 
       /* Payment Status Overlay */
       .payment-overlay {
@@ -102,6 +95,31 @@
         width: 90%;
         text-align: center;
       }
+
+      /* 🌟 Size Selection Buttons */
+      .size-btn {
+        border: 2px solid #dee2e6;
+        background-color: white;
+        color: #495057;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 60px;
+      }
+      .size-btn:hover {
+        border-color: #0d6efd;
+        color: #0d6efd;
+        background-color: #f8f9fa;
+      }
+      .size-btn.active {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+      }
     </style>
   </head>
   <body>
@@ -118,7 +136,6 @@
               src="logo.png"
               alt=""
             />
-            <!-- <i class="fa-solid fa-store fs-6"></i> -->
           </div>
           <h4 class="m-0 fw-bold">
             Muslim<span class="text-primary">Store</span>
@@ -208,14 +225,59 @@
       <i class="fa-brands fa-telegram"></i>
     </a>
 
-    <!-- Payment Status Overlay (NEW) -->
+    <!-- 🌟 Size Selection Modal (លោតឡើងពេលចុច Add To Cart បើមាន Size) -->
+    <div
+      class="modal fade"
+      id="sizeModal"
+      tabindex="-1"
+      aria-hidden="true"
+      data-bs-backdrop="static"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-light border-bottom-0">
+            <h5 class="modal-title fw-bold text-dark">
+              <i class="fa-solid fa-ruler-combined me-2"></i> ជ្រើសរើសទំហំ
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body p-4 text-center">
+            <h6 class="mb-4 text-muted" id="size-modal-product-name">
+              Product Name
+            </h6>
+            <div
+              id="size-options"
+              class="d-flex flex-wrap justify-content-center gap-2 mb-4"
+            >
+              <!-- ប៊ូតុង Size នឹងលោតចេញទីនេះ -->
+            </div>
+            <input type="hidden" id="pending-product-id" />
+            <input type="hidden" id="selected-size" />
+            <button
+              type="button"
+              class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm rounded-3"
+              id="confirm-size-btn"
+              disabled
+              onclick="confirmAddToCart()"
+            >
+              បញ្ជាក់ (Confirm) <i class="fa-solid fa-cart-plus ms-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Status Overlay -->
     <div
       id="paymentStatusOverlay"
       class="payment-overlay"
       style="display: none"
     >
       <div class="status-card">
-        <!-- Loading State -->
         <div id="status-loading">
           <div
             class="spinner-border text-primary"
@@ -227,8 +289,6 @@
             សូមកុំបិទទំព័រនេះ ហាងកំពុងពិនិត្យវិក្កយបត្ររបស់អ្នកសិន។
           </p>
         </div>
-
-        <!-- Success State -->
         <div id="status-success" style="display: none">
           <i
             class="fa-solid fa-circle-check text-success"
@@ -243,8 +303,6 @@
             បិទ (Close)
           </button>
         </div>
-
-        <!-- Failed / Rejected State -->
         <div id="status-failed" style="display: none">
           <i
             class="fa-solid fa-circle-xmark text-danger"
@@ -318,7 +376,6 @@
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"
             ></button>
           </div>
           <div class="modal-body p-4">
@@ -377,7 +434,6 @@
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
-              aria-label="Close"
             ></button>
           </div>
           <div class="modal-body text-center p-4">
@@ -448,7 +504,19 @@
           },
           complete: function (results) {
             try {
-              processData(results.data);
+              // 🌟 ចាប់យក Columns ដែលតំណាងឲ្យ Size ដោយស្វ័យប្រវត្តិ (ចន្លោះ Category និង Image URL)
+              let fields = results.meta.fields.map((h) =>
+                h.trim().toLowerCase(),
+              );
+              let catIdx = fields.indexOf("category");
+              let imgIdx = fields.indexOf("image url");
+              let sizeKeys = [];
+
+              if (catIdx !== -1 && imgIdx !== -1 && imgIdx > catIdx + 1) {
+                sizeKeys = fields.slice(catIdx + 1, imgIdx);
+              }
+
+              processData(results.data, sizeKeys);
             } catch (e) {
               showError("មានបញ្ហាក្នុងការរៀបចំទិន្នន័យ៖ " + e.message);
             }
@@ -473,23 +541,18 @@
           `<div class="alert alert-danger d-inline-block"><i class="fa-solid fa-triangle-exclamation"></i> ${msg}</div>`;
       }
 
-      function processData(data) {
+      function processData(data, sizeKeys) {
         for (let row of data) {
           if (row["bot token"] && !TELEGRAM_BOT_TOKEN)
             TELEGRAM_BOT_TOKEN = row["bot token"].trim();
-
-          // កាត់យកតែលេខសុទ្ធចេញពី My ID បើទោះជាមានពាក្យ "ID" នៅពីមុខក៏ដោយ
-          if (row["my id"] && !TELEGRAM_CHAT_ID) {
+          if (row["my id"] && !TELEGRAM_CHAT_ID)
             TELEGRAM_CHAT_ID = String(row["my id"])
               .replace(/[^\d-]/g, "")
               .trim();
-          }
-
           if (row["telegram"] && !TELEGRAM_CONTACT_LINK)
             TELEGRAM_CONTACT_LINK = row["telegram"].trim();
           if (row["location"] && !STORE_LOCATION_LINK)
             STORE_LOCATION_LINK = row["location"].trim();
-
           if (row["aba"] && !BANK_LINKS["ABA"])
             BANK_LINKS["ABA"] = row["aba"].trim();
           if (row["acleda"] && !BANK_LINKS["ACLEDA"])
@@ -518,9 +581,20 @@
               /[^0-9.]/g,
               "",
             );
+
+            // 🌟 ទាញយក Size ពីជួរឈរដែលបានកំណត់ (អត់យកកន្លែងទទេ)
+            let availableSizes = [];
+            sizeKeys.forEach((key) => {
+              let sizeValue = item[key];
+              if (sizeValue !== undefined && String(sizeValue).trim() !== "") {
+                availableSizes.push(String(sizeValue).trim());
+              }
+            });
+
             return {
               id: item["id"] || "",
               name: item["name"] || "Unnamed Product",
+              sizes: availableSizes, // ផ្ទុក Size ទាំងអស់របស់ទំនិញ
               category: item["category"] ? item["category"].trim() : "General",
               image:
                 item["image url"] ||
@@ -557,7 +631,6 @@
           if (!product || product.stock <= 0) return false;
           cartItem.price = product.price;
           cartItem.name = product.name;
-          if (cartItem.qty > product.stock) cartItem.qty = product.stock;
           return true;
         });
         saveCart();
@@ -594,6 +667,13 @@
         grid.innerHTML = "";
         productsToRender.forEach((p) => {
           const inStock = p.stock > 0;
+
+          // 🌟 បង្ហាញ Size នៅលើកាតទំនិញ (ដើម្បីអោយអតិថិជនដឹងមុន)
+          const sizesDisplay =
+            p.sizes.length > 0
+              ? `<div class="mt-1 mb-2 text-muted" style="font-size: 0.85rem;"><i class="fa-solid fa-ruler-combined me-1"></i> Sizes: ${p.sizes.join(", ")}</div>`
+              : "";
+
           grid.innerHTML += `
                 <div class="col-12 col-sm-6 col-md-4 col-xl-3">
                     <div class="product-card">
@@ -601,8 +681,9 @@
                             <span class="badge-stock ${inStock ? "" : "text-danger"}"><i class="fa-solid fa-box me-1"></i> ${inStock ? p.stock + " In Stock" : "Out of Stock"}</span>
                             <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
                         </div>
-                        <h4 class="product-title">${p.name}</h4>
-                        <p class="product-desc">${p.desc}</p>
+                        <h4 class="product-title m-0 mt-2">${p.name}</h4>
+                        ${sizesDisplay}
+                        <p class="product-desc mt-1">${p.desc}</p>
                         <div class="price-box">
                             <span class="current-price">$${p.price.toFixed(2)}</span>
                             ${p.oldPrice > p.price ? `<span class="old-price">$${p.oldPrice.toFixed(2)}</span>` : ""}
@@ -615,18 +696,96 @@
         });
       }
 
+      // 🌟 Function ចុច Add To Cart
       function addToCart(id) {
         const product = allProducts.find((p) => p.id === id);
-        const existingItem = cart.find((item) => item.id === id);
-        if (existingItem) {
-          if (existingItem.qty < product.stock) existingItem.qty++;
-          else {
-            alert("អស់ស្តុកហើយ!");
-            return;
-          }
+
+        // ឆែកមើលបើសិនជាទំនិញនោះមានបញ្ជូល Size ក្នុង Sheet
+        if (product.sizes && product.sizes.length > 0) {
+          // បើមាន លោតផ្ទាំងឲ្យរើស Size សិន
+          openSizeModal(product);
         } else {
-          cart.push({ ...product, qty: 1 });
+          // បើអត់មានបញ្ជូល Size ទេ Add ចូលផ្ទាល់តែម្តង
+          executeAddToCart(product, null);
         }
+      }
+
+      // 🌟 Function លោតផ្ទាំងរើស Size
+      function openSizeModal(product) {
+        document.getElementById("size-modal-product-name").innerText =
+          product.name;
+        document.getElementById("pending-product-id").value = product.id;
+        document.getElementById("selected-size").value = "";
+
+        // Disable ប៊ូតុង Confirm រហូតទាល់តែរើស Size សិន
+        const confirmBtn = document.getElementById("confirm-size-btn");
+        confirmBtn.disabled = true;
+
+        const sizeContainer = document.getElementById("size-options");
+        sizeContainer.innerHTML = ""; // លុប Size ចាស់ៗចោល
+
+        // បង្កើតប៊ូតុង Size ថ្មី
+        product.sizes.forEach((size) => {
+          const btn = document.createElement("button");
+          btn.className = "size-btn";
+          btn.innerText = size;
+          btn.onclick = function () {
+            // ផ្តាច់ Active ពីប៊ូតុងផ្សេង
+            document
+              .querySelectorAll(".size-btn")
+              .forEach((b) => b.classList.remove("active"));
+            // ដាក់ Active លើប៊ូតុងដែលកំពុងចុច
+            this.classList.add("active");
+            // កំណត់តម្លៃ Size ចូល Input លាក់
+            document.getElementById("selected-size").value = size;
+            // បើកអោយចុច Confirm បាន
+            confirmBtn.disabled = false;
+          };
+          sizeContainer.appendChild(btn);
+        });
+
+        // បង្ហាញ Modal
+        new bootstrap.Modal(document.getElementById("sizeModal")).show();
+      }
+
+      // 🌟 Function បញ្ជាក់ការរើស Size រួចបញ្ចូលក្នុងរទេះ
+      function confirmAddToCart() {
+        const id = document.getElementById("pending-product-id").value;
+        const size = document.getElementById("selected-size").value;
+        const product = allProducts.find((p) => p.id === id);
+
+        if (!size) return; // ការពារ Error
+
+        executeAddToCart(product, size);
+
+        // បិទ Modal វិញ
+        bootstrap.Modal.getInstance(
+          document.getElementById("sizeModal"),
+        ).hide();
+      }
+
+      // 🌟 Function បញ្ចូលទំនិញទៅក្នុងរទេះពិតប្រាកដ
+      function executeAddToCart(product, selectedSize) {
+        // គណនាចំនួនសរុបនៃទំនិញនេះនៅក្នុងរទេះ (ទោះបីខុស Size គ្នាក៏គិតចូលស្តុកតែមួយ)
+        let totalQtyInCart = cart
+          .filter((c) => c.id === product.id)
+          .reduce((sum, c) => sum + c.qty, 0);
+        if (totalQtyInCart >= product.stock) {
+          alert("អស់ស្តុកហើយ!");
+          return;
+        }
+
+        // ស្វែងរកទំនិញដែលដូចគ្នាទាំង ID និង Size
+        const existingItemIndex = cart.findIndex(
+          (item) => item.id === product.id && item.size === selectedSize,
+        );
+
+        if (existingItemIndex !== -1) {
+          cart[existingItemIndex].qty++;
+        } else {
+          cart.push({ ...product, size: selectedSize, qty: 1 });
+        }
+
         updateCartUI();
         saveCart();
       }
@@ -642,11 +801,17 @@
           cart.forEach((item, index) => {
             total += item.price * item.qty;
             count += item.qty;
+
+            // 🌟 បង្ហាញ Size នៅក្នុងកន្ត្រក
+            const sizeBadge = item.size
+              ? `<span class="badge bg-light text-dark border ms-1">Size: ${item.size}</span>`
+              : "";
+
             container.innerHTML += `
                     <div class="cart-item shadow-sm">
                         <img src="${item.image}" class="cart-img" onerror="this.src='https://via.placeholder.com/70'">
                         <div class="flex-grow-1 overflow-hidden">
-                            <h6 class="m-0 fw-bold text-truncate">${item.name}</h6>
+                            <h6 class="m-0 fw-bold text-truncate">${item.name} ${sizeBadge}</h6>
                             <div class="text-primary fw-bold mt-1">$${(item.price * item.qty).toFixed(2)}</div>
                         </div>
                         <div class="qty-control">
@@ -665,10 +830,17 @@
       function updateQty(index, change) {
         const item = cart[index];
         const product = allProducts.find((p) => p.id === item.id);
-        if (product && change === 1 && item.qty >= product.stock) {
-          alert("លើសចំនួនស្តុក!");
-          return;
+
+        if (change === 1) {
+          let totalQtyInCart = cart
+            .filter((c) => c.id === product.id)
+            .reduce((sum, c) => sum + c.qty, 0);
+          if (totalQtyInCart >= product.stock) {
+            alert("លើសចំនួនស្តុក!");
+            return;
+          }
         }
+
         item.qty += change;
         if (item.qty <= 0) cart.splice(index, 1);
         updateCartUI();
@@ -725,14 +897,9 @@
         bootstrap.Modal.getInstance(
           document.getElementById("paymentModal"),
         )?.hide();
-
-        // បង្ហាញអេក្រង់រង់ចាំការបញ្ជាក់
         showStatusOverlay("loading");
-
-        // បើក Link ធនាគារក្នុងផ្ទាំងថ្មី (បើសិនមាន)
         if (BANK_LINKS[bankName]) window.open(BANK_LINKS[bankName], "_blank");
 
-        // ផ្ញើវិក្កយបត្រទៅ Telegram
         let isTgSuccess = await sendTelegramNotification(
           bankName,
           totalAmountText,
@@ -743,8 +910,6 @@
           showStatusOverlay("failed");
           return;
         }
-
-        // ចាប់ផ្តើមឆែកស្ថានភាពវិក្កយបត្រពី Google Apps Script
         startPolling(orderId);
       }
 
@@ -765,11 +930,12 @@
         const custLocation =
           document.getElementById("cust-location").value || "N/A";
 
+        // 🌟 ភ្ជាប់ Size ទៅក្នុងវិក្កយបត្រ Telegram
         let itemsList = cart
-          .map(
-            (item, index) =>
-              `${index + 1}. ${item.name}\n   └ ${item.qty} x $${item.price.toFixed(2)} = $${(item.price * item.qty).toFixed(2)}`,
-          )
+          .map((item, index) => {
+            let sizeText = item.size ? ` [Size: ${item.size}]` : "";
+            return `${index + 1}. ${item.name}${sizeText}\n   └ ${item.qty} x $${item.price.toFixed(2)} = $${(item.price * item.qty).toFixed(2)}`;
+          })
           .join("\n");
 
         const caption =
@@ -815,7 +981,6 @@
           let data = await res.json();
           if (!data.ok) return false;
 
-          // កត់ត្រាចូល Apps Script ជាប្រភេទ Pending សិន
           await fetch(APPS_SCRIPT_URL, {
             method: "POST",
             body: JSON.stringify({
@@ -836,7 +1001,6 @@
         pollingInterval = setInterval(async () => {
           pollAttempts++;
           if (pollAttempts > 100) {
-            // ឈប់ Poll បន្ទាប់ពី 5 នាទី (ការពារគាំង)
             clearInterval(pollingInterval);
             showStatusOverlay("failed");
             return;
@@ -854,8 +1018,8 @@
               clearInterval(pollingInterval);
               showStatusOverlay("failed");
             }
-          } catch (e) {} // បន្ត Poll ប្រសិនបើ Error បណ្តាញ
-        }, 3000); // ឆែករៀងរាល់ 3 វិនាទី
+          } catch (e) {}
+        }, 3000);
       }
 
       function showStatusOverlay(state) {
@@ -866,7 +1030,6 @@
           state === "success" ? "block" : "none";
         document.getElementById("status-failed").style.display =
           state === "failed" ? "block" : "none";
-
         document.getElementById("floating-contact-btn").style.display = "none";
         if (state === "failed" && TELEGRAM_CONTACT_LINK) {
           document.getElementById("forced-contact-btn").href =
@@ -882,8 +1045,9 @@
       }
 
       function clearCartLocally() {
-        cart = [];
-        updateCartUI();
+        cart = []; // សម្អាតទិន្នន័យក្នុង Array cart
+        saveCart(); // រក្សាទុកការផ្លាស់ប្តូរទៅក្នុង Local Storage (ស្មើនឹងការលុប)
+        updateCartUI(); // ធ្វើបច្ចុប្បន្នភាព Interface កន្ត្រកទំនិញឱ្យទៅជាទទេវិញ
       }
     </script>
   </body>
