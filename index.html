@@ -39,6 +39,34 @@
         margin-top: auto;
         border-top: 1px solid #dee2e6;
       }
+
+      /* Floating Chat Button Styles */
+      .floating-chat-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background-color: #0088cc; /* Telegram Color */
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+      .floating-chat-btn:hover {
+        transform: scale(1.1);
+        color: white;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+      .floating-chat-btn i {
+        font-size: 35px;
+        margin-right: 2px;
+      }
     </style>
   </head>
   <body>
@@ -118,6 +146,17 @@
     <!-- Footer -->
     <footer class="footer">Powered By Farors</footer>
 
+    <!-- Floating Contact Button -->
+    <a
+      href="#"
+      target="_blank"
+      id="floating-contact-btn"
+      class="floating-chat-btn"
+      style="display: none"
+    >
+      <i class="fa-brands fa-telegram"></i>
+    </a>
+
     <!-- Cart Offcanvas -->
     <div
       class="offcanvas offcanvas-end border-0 shadow"
@@ -125,6 +164,7 @@
       id="cartOffcanvas"
       style="width: 400px"
     >
+      <!-- (កូដ Cart នៅដដែល) -->
       <div class="offcanvas-header bg-light border-bottom">
         <h5 class="offcanvas-title fw-bold" id="cartTitle">
           <i class="fa-solid fa-bag-shopping text-primary"></i> Your Cart
@@ -160,20 +200,12 @@
       </div>
     </div>
 
-    <!-- Customer Details Modal (New) -->
-    <div
-      class="modal fade"
-      id="customerModal"
-      tabindex="-1"
-      aria-labelledby="customerModalLabel"
-      aria-hidden="true"
-    >
+    <!-- Customer Details Modal -->
+    <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
           <div class="modal-header bg-light border-bottom-0">
-            <h5 class="modal-title fw-bold" id="customerModalLabel">
-              បំពេញព័ត៌មានអតិថិជន
-            </h5>
+            <h5 class="modal-title fw-bold">បំពេញព័ត៌មានអតិថិជន</h5>
             <button
               type="button"
               class="btn-close"
@@ -252,22 +284,22 @@
 
             <div class="d-grid gap-3">
               <button
-                class="btn btn-aba py-3 fw-bold fs-5 shadow-sm rounded-3"
-                onclick="processBankPayment('ABA Bank')"
+                class="btn btn-primary py-3 fw-bold fs-5 shadow-sm rounded-3"
+                onclick="processBankPayment('ABA')"
               >
                 <i class="fa-solid fa-building-columns me-2"></i> បង់តាមរយៈ ABA
                 Bank
               </button>
               <button
-                class="btn btn-acleda py-3 fw-bold fs-5 shadow-sm rounded-3"
-                onclick="processBankPayment('ACLEDA Bank')"
+                class="btn btn-dark py-3 fw-bold fs-5 shadow-sm rounded-3"
+                onclick="processBankPayment('ACLEDA')"
               >
                 <i class="fa-solid fa-building-columns me-2"></i> បង់តាមរយៈ
                 ACLEDA Bank
               </button>
               <button
-                class="btn btn-wing py-3 fw-bold fs-5 shadow-sm rounded-3"
-                onclick="processBankPayment('Wing Bank')"
+                class="btn btn-success py-3 fw-bold fs-5 shadow-sm rounded-3"
+                onclick="processBankPayment('Wing')"
               >
                 <i class="fa-solid fa-building-columns me-2"></i> បង់តាមរយៈ Wing
                 Bank
@@ -285,19 +317,22 @@
     <script>
       const SHEET_URL =
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vRtHQITBdbzdbRvUASp2wIn6ficZcq7IiYmyhIHMXNFMmNYZ8qwnIJXdi-a6Nz_dm0E3ArLIw8n1y76/pub?output=csv";
-
-      // URL App Script ថ្មីរបស់អ្នក ដែលបានប្តូររួចរាល់
       const APPS_SCRIPT_URL =
         "https://script.google.com/macros/s/AKfycbwUw9FPJ0mO87TV5lOWdWBaKo_t7pnUAqMaxySB6kWKQU5KvJP9Y_aTJ7TIa60qYzYYRA/exec";
-
-      // តម្លៃលំនាំដើម ប្រសិនបើទាញពី Sheet អត់បាន
-      let TELEGRAM_BOT_TOKEN = "8267523556:AAFzqBMutjD4PsFuZYvDxXt7d7VL0W-pKEk";
-      let TELEGRAM_CHAT_ID = "1382677305";
-      let TELEGRAM_CONTACT_LINK = "https://t.me/Farors";
-      let paymentLink = "https://pay.ababank.com/oRF8/yxsuiw51";
-
       const STORE_LOGO_URL =
         "https://img.freepik.com/free-vector/receipt-icon-with-check-mark-flat-style_1150-35002.jpg";
+
+      // Global Settings Variables
+      let TELEGRAM_BOT_TOKEN = "";
+      let TELEGRAM_CHAT_ID = "";
+      let TELEGRAM_CONTACT_LINK = "";
+
+      // Bank Links
+      let BANK_LINKS = {
+        ABA: "",
+        ACLEDA: "",
+        Wing: "",
+      };
 
       let allProducts = [];
       let cart = [];
@@ -340,12 +375,28 @@
       }
 
       function processData(data) {
-        // ទាញយកទិន្នន័យពីជួរទី១ (Row 1) សម្រាប់ Setting ផ្សេងៗ
-        if (data.length > 0) {
-          if (data[0]["payment link"]) paymentLink = data[0]["payment link"];
-          if (data[0]["bot token"]) TELEGRAM_BOT_TOKEN = data[0]["bot token"];
-          if (data[0]["my id"]) TELEGRAM_CHAT_ID = data[0]["my id"];
-          if (data[0]["telegram"]) TELEGRAM_CONTACT_LINK = data[0]["telegram"];
+        // ស្វែងរក Token, ID, និង Link តាមគ្រប់ជួរទាំងអស់ ដើម្បីកុំឲ្យខុសពេលទិន្នន័យនៅជួរក្រោមៗ
+        for (let row of data) {
+          if (row["bot token"] && !TELEGRAM_BOT_TOKEN)
+            TELEGRAM_BOT_TOKEN = row["bot token"].trim();
+          if (row["my id"] && !TELEGRAM_CHAT_ID)
+            TELEGRAM_CHAT_ID = String(row["my id"]).trim();
+          if (row["telegram"] && !TELEGRAM_CONTACT_LINK)
+            TELEGRAM_CONTACT_LINK = row["telegram"].trim();
+
+          if (row["aba"] && !BANK_LINKS["ABA"])
+            BANK_LINKS["ABA"] = row["aba"].trim();
+          if (row["acleda"] && !BANK_LINKS["ACLEDA"])
+            BANK_LINKS["ACLEDA"] = row["acleda"].trim();
+          if (row["wing"] && !BANK_LINKS["Wing"])
+            BANK_LINKS["Wing"] = row["wing"].trim();
+        }
+
+        // Setup Floating Contact Button
+        if (TELEGRAM_CONTACT_LINK) {
+          const contactBtn = document.getElementById("floating-contact-btn");
+          contactBtn.href = TELEGRAM_CONTACT_LINK;
+          contactBtn.style.display = "flex"; // បង្ហាញប៊ូតុង
         }
 
         allProducts = data
@@ -356,14 +407,14 @@
               "",
             );
             let rawName = item["name"] || "Unnamed Product";
-            let rawCategory = item["category"] ? item["category"].trim() : "";
-
-            let finalCategory = rawCategory || "General";
+            let rawCategory = item["category"]
+              ? item["category"].trim()
+              : "General";
 
             return {
               id: item["id"] || "",
               name: rawName,
-              category: finalCategory,
+              category: rawCategory,
               image:
                 item["image url"] ||
                 "https://via.placeholder.com/300?text=No+Image",
@@ -545,14 +596,11 @@
           alert("រទេះទទេស្អាត! សូមជ្រើសរើសទំនិញជាមុនសិន។");
           return;
         }
-
-        // បិទ Cart Offcanvas
         const cartEl = document.getElementById("cartOffcanvas");
         const cartInstance = bootstrap.Offcanvas.getInstance(cartEl);
         if (cartInstance) cartInstance.hide();
 
         if (isPOSMode) {
-          // បើជា POS Mode ឱ្យរំលងការបំពេញឈ្មោះ
           document.getElementById("modal-total-amount").innerText =
             document.getElementById("cart-total").innerText;
           const paymentModal = new bootstrap.Modal(
@@ -560,7 +608,6 @@
           );
           paymentModal.show();
         } else {
-          // បង្ហាញ Modal បំពេញព័ត៌មានអតិថិជនសិន
           const customerModal = new bootstrap.Modal(
             document.getElementById("customerModal"),
           );
@@ -575,13 +622,10 @@
           alert("សូមបំពេញ ឈ្មោះ និង លេខទូរស័ព្ទឱ្យបានត្រឹមត្រូវ!");
           return;
         }
-
-        // បិទ Customer Modal
         const custModalEl = document.getElementById("customerModal");
         const custModalInstance = bootstrap.Modal.getInstance(custModalEl);
         if (custModalInstance) custModalInstance.hide();
 
-        // បើក Bank Payment Modal
         document.getElementById("modal-total-amount").innerText =
           document.getElementById("cart-total").innerText;
         const paymentModal = new bootstrap.Modal(
@@ -590,15 +634,19 @@
         paymentModal.show();
       }
 
-      function sendTelegramNotification(bankName, totalAmountText) {
-        if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+      async function sendTelegramNotification(bankName, totalAmountText) {
+        if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+          console.error(
+            "បាត់បង់ Bot Token ឬ My ID. សូមពិនិត្យមើល Google Sheet របស់អ្នក។",
+          );
+          return;
+        }
 
         const now = new Date();
         const dateStr = now.toLocaleDateString("en-GB");
         const timeStr = now.toLocaleTimeString("en-US");
         const orderId = "INV" + Date.now().toString().slice(-6);
 
-        // ទាញយកព័ត៌មានអតិថិជន
         const custName =
           document.getElementById("cust-name").value || "POS Customer";
         const custPhone = document.getElementById("cust-phone").value || "N/A";
@@ -628,8 +676,6 @@
           `💰 <b>ទឹកប្រាក់សរុប:</b> <b>${totalAmountText}</b>\n\n` +
           `<i>⚠️ សូមពិនិត្យមើលគណនីធនាគារមុននឹងចុច Confirm ដើម្បីកាត់ស្តុក។</i>`;
 
-        // ចងភ្ជាប់ទិន្នន័យ order ទៅក្នុង Callback Data ដើម្បីអោយ Webhook អាចដឹងថាកាត់ស្តុកអីខ្លះ
-        // (ដោយសារ Telegram Callback Data limit 64 bytes យើងបញ្ជូន Cart ទៅ Google Apps Script ទុកសិន រួចចាំ Confirm ក្រោយ)
         sendOrderToAppsScript(orderId);
 
         const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
@@ -644,37 +690,50 @@
                 { text: "✅ Confirm", callback_data: `confirm_${orderId}` },
                 { text: "❌ Reject", callback_data: `reject_${orderId}` },
               ],
-              [{ text: "📞 Contact Us", url: TELEGRAM_CONTACT_LINK }],
+              [
+                {
+                  text: "📞 Contact Us",
+                  url: TELEGRAM_CONTACT_LINK || "https://t.me/",
+                },
+              ],
             ],
           },
         };
 
-        fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        try {
+          await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        } catch (e) {
+          console.error("មិនអាចផ្ញើទៅកាន់ Telegram បានទេ: ", e);
+        }
       }
 
       function processBankPayment(bankName) {
         const totalAmountText = document.getElementById("cart-total").innerText;
+
+        // ផ្ញើវិក្កយបត្រទៅ Telegram
         sendTelegramNotification(bankName, totalAmountText);
 
-        if (bankName === "ABA Bank") {
-          window.open(paymentLink, "_blank");
+        // បើក Link ធនាគារទៅតាមឈ្មោះដែលបានជ្រើសរើស
+        const bankLink = BANK_LINKS[bankName];
+        if (bankLink) {
+          window.open(bankLink, "_blank");
         } else {
           alert(
-            `កំពុងដំណើរការទៅកាន់កម្មវិធី ${bankName}...\nសូមធ្វើការស្កេន ឬ វាយបញ្ចូលគណនី។`,
+            `មិនមានតំណភ្ជាប់សម្រាប់បង់ប្រាក់តាម ${bankName} ទេ! សូមទាក់ទងអ្នកលក់។`,
           );
         }
 
+        // បិទ Modal និងលុបកន្ត្រក
         const modalEl = document.getElementById("paymentModal");
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
         clearCartLocally();
       }
 
-      // បញ្ជូនទិន្នន័យទំនិញទៅ Google Apps Script ទុកជា Pending (មិនទាន់កាត់ស្តុក)
       async function sendOrderToAppsScript(orderId) {
         try {
           await fetch(APPS_SCRIPT_URL, {
@@ -690,7 +749,6 @@
         }
       }
 
-      // លុបទំនិញក្នុងកន្ត្រកតែនៅលើទូរស័ព្ទអ្នកទិញ (ស្តុកក្នុង Sheet នឹងកាត់ពេលអ្នកលក់ចុច Confirm ក្នុង Telegram)
       function clearCartLocally() {
         cart = [];
         updateCartUI();
